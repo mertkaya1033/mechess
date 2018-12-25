@@ -52,10 +52,7 @@ public class Display extends JPanel implements MouseListener,
 
     @Override
     public void mouseClicked(MouseEvent arg0) {
-        Square clickedSquare = board.getClickedSquare(arg0);
-        if (clickedSquare != null) {
-            clickedSquare.clicked();
-        }
+        board.clicked(arg0);
     }
 
     @Override

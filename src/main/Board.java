@@ -7,6 +7,7 @@ public class Board {
     private Square[][] board = new Square[8][8];
     private Player whitePlayer;
     private Player blackPlayer;
+    private Square selectedSquare = null;
 
     private int x, y;
 
@@ -26,8 +27,8 @@ public class Board {
         whitePlayer = new Player(Piece.CPlayer.white, this);
         blackPlayer = new Player(Piece.CPlayer.black, this);
 
-        for(int i = 0; i < board.length; i++){
-            for(int j = 0; j < board[i].length; j++){
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
                 System.out.print(board[i][j].getPos() + "\t");
             }
             System.out.println();
@@ -51,17 +52,22 @@ public class Board {
         return board[board.length - Integer.parseInt(pos.charAt(1) + "")][(((int) pos.charAt(0)) - 97)];
     }
 
-    public Square getClickedSquare(MouseEvent event) {
+    public void clicked(MouseEvent event) {
         int mouseX = event.getX();
         int mouseY = event.getY();
 
         boolean xInBounds = (mouseX >= this.x && mouseX <= this.x + Constants.BOARD_SIZE);
         boolean yInBounds = (mouseY >= this.y && mouseY <= this.y + Constants.BOARD_SIZE);
-
-        if (xInBounds && yInBounds) {
-            return board[(mouseY - this.y) / Constants.SQUARE_SIZE][(mouseX - this.x) / Constants.SQUARE_SIZE];
+        Square s = null;
+        if(xInBounds && yInBounds){
+            s = board[(mouseY - this.y) / Constants.SQUARE_SIZE][(mouseX - this.x) / Constants.SQUARE_SIZE];
         }
-        return null;
+        if (selectedSquare == null && s != null) {
+            selectedSquare = s;
+            selectedSquare.clicked();
+        }else if(s != null && selectedSquare == s){
+            selectedSquare.clicked();
+            selectedSquare = null;
+        }
     }
-
 }

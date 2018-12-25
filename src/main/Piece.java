@@ -27,7 +27,7 @@ public abstract class Piece {
         this.position = position;
         this.type = type;
         this.color = color;
-        this.image = new ImageIcon("Chess/src/images/" + color.toString() + "_"
+        this.image = new ImageIcon("src/images/" + color.toString() + "_"
                 + type.toString() + ".png").getImage();
         this.image = this.image.getScaledInstance(Constants.SQUARE_SIZE, Constants.SQUARE_SIZE, 0);
         this.threads = new ArrayList<>();

@@ -45,6 +45,9 @@ public abstract class Piece {
     public void move(Square pos) {
         if (threads.contains(pos)) {
             this.position = pos.getPos();
+            this.currentSquare.setPiece(null);
+            this.currentSquare = pos;
+            pos.setPiece(this);
         }
     }
 

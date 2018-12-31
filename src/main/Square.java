@@ -10,8 +10,9 @@ public class Square {
     private ArrayList<Piece> threads = new ArrayList<>();
     private Piece piece = null;
     private Color color;
-    private boolean aPieceCanMove = false;
+    private Piece thePieceCanMove = null;
     private boolean selected = false;
+    private boolean showThreats = false;
 
     public Square(String pos, int[] index, boolean isDark) {
         this.index = index;
@@ -30,30 +31,27 @@ public class Square {
 
         g.setColor(this.color);
         g.fillRect(x, y, Constants.SQUARE_SIZE, Constants.SQUARE_SIZE);
-//        g.setColor(Color.black);
-//        g.drawString(position, x + 10, y + 10);
         if (piece != null) {
             piece.display(g, x, y);
         }
 
         if (selected) {
             g.setColor(Color.GREEN);
-            for(int i = 0; i < 3; i++)
-                g.drawRect(x + i, y + i, Constants.SQUARE_SIZE - (i * 2), Constants.SQUARE_SIZE- (i * 2));
-            if (piece != null) {
+            for (int i = 0; i < 3; i++)
+                g.drawRect(x + i, y + i, Constants.SQUARE_SIZE - (i * 2), Constants.SQUARE_SIZE - (i * 2));
+            if (piece != null && showThreats) {
                 ArrayList<Square> th = piece.getThreads();
                 for (int i = 0; i < th.size(); i++) {
-//                    System.out.println(th.get(i).getIndex()[0] + "\t" + th.get(i).getIndex()[1]);
-                    th.get(i).setaPieceCanMove(true);
+                    th.get(i).setThePieceCanMove(piece);
                 }
             }
         } else if (piece != null) {
             for (int i = 0; i < piece.getThreads().size(); i++) {
-                piece.getThreads().get(i).setaPieceCanMove(false);
+                piece.getThreads().get(i).setThePieceCanMove(piece);
             }
         }
 
-        if (aPieceCanMove) {
+        if (thePieceCanMove != null) {
             int elX, elY, elSize;
             elSize = Constants.SQUARE_SIZE / 3;
             elX = x + (Constants.SQUARE_SIZE - elSize) / 2;
@@ -86,13 +84,21 @@ public class Square {
         this.threads.add(piece);
     }
 
-    public void setaPieceCanMove(boolean aPieceCanMove) {
-        this.aPieceCanMove = aPieceCanMove;
+    public void setThePieceCanMove(Piece piece) {
+        this.thePieceCanMove = piece;
     }
 
-    public void clicked() {
+    public Piece getThePieceCanMove() {
+        return thePieceCanMove;
+    }
+
+    public void clicked(boolean showThreatsForPiece) {
         this.selected = !this.selected;
-        System.out.println(piece == null);
+        if(thePieceCanMove != null){
+            thePieceCanMove.move(this);
+
+        }
+        showThreats = showThreatsForPiece;
     }
 
 }

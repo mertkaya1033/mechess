@@ -9,6 +9,7 @@ public class Board {
     private Player blackPlayer;
     private Square selectedSquare = null;
 
+    private boolean whiteTurn = true;
     private int x, y;
 
     public Board() {
@@ -53,20 +54,33 @@ public class Board {
     }
 
     public void clicked(MouseEvent event) {
+        if (whiteTurn) {
+            whitePlayer.clicked(event);
+        } else {
+            blackPlayer.clicked(event);
+        }
+    }
+
+    public Square getClickedSquare(MouseEvent event) {
+
         int mouseX = event.getX();
         int mouseY = event.getY();
 
         boolean xInBounds = (mouseX >= this.x && mouseX <= this.x + Constants.BOARD_SIZE);
         boolean yInBounds = (mouseY >= this.y && mouseY <= this.y + Constants.BOARD_SIZE);
         Square s = null;
-        if(xInBounds && yInBounds){
+        if (xInBounds && yInBounds) {
             s = board[(mouseY - this.y) / Constants.SQUARE_SIZE][(mouseX - this.x) / Constants.SQUARE_SIZE];
         }
-        if (selectedSquare == null && s != null) {
+        return s;
+    }
+
+    public void selectSquare(Square s, boolean showThreats) {
+        if (selectedSquare == null) {
             selectedSquare = s;
-            selectedSquare.clicked();
-        }else if(s != null && selectedSquare == s){
-            selectedSquare.clicked();
+            selectedSquare.clicked(showThreats);
+        } else if (selectedSquare == s) {
+            selectedSquare.clicked(showThreats);
             selectedSquare = null;
         }
     }

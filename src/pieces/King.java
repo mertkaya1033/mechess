@@ -2,10 +2,11 @@ package pieces;
 
 import main.Board;
 import main.Piece;
+import main.Player;
 
 public class King extends Piece {
-	public King(String position, CPlayer color) {
-		super(position, color, Type.KING);
+	public King(String position, Player player) {
+		super(position, player, Type.KING);
 		// TODO Auto-generated constructor stub
 	}
 

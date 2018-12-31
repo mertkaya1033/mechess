@@ -16,7 +16,7 @@ import pieces.Bishop;
 public class Display extends JPanel implements MouseListener,
         MouseMotionListener, ActionListener {
 
-    private Timer tm = new Timer(30, this);
+    private Timer tm = new Timer(5 , this);
     private Board board;
 
 
@@ -53,6 +53,7 @@ public class Display extends JPanel implements MouseListener,
     @Override
     public void mouseClicked(MouseEvent arg0) {
         board.clicked(arg0);
+        repaint();
     }
 
     @Override

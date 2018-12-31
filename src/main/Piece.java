@@ -21,14 +21,15 @@ public abstract class Piece {
     protected int index[];
     protected Image image;
     protected Square currentSquare = null;
-    protected CPlayer color;
+    protected Player player;
 
-    public Piece(String position, CPlayer color, Type type) {
+    public Piece(String position, Player player, Type type) {
         this.position = position;
         this.type = type;
-        this.color = color;
-        this.image = new ImageIcon("src/images/" + color.toString() + "_"
-                + type.toString() + ".png").getImage();
+        this.player = player;
+
+        String imageName = "src/images/" + player.getColor().toString() + "_" + type.toString() + ".png";
+        this.image = new ImageIcon(imageName).getImage();
         this.image = this.image.getScaledInstance(Constants.SQUARE_SIZE, Constants.SQUARE_SIZE, 0);
         this.threads = new ArrayList<>();
     }
@@ -55,11 +56,11 @@ public abstract class Piece {
         g.drawImage(this.image, x, y, null);
     }
 
-    public ArrayList<Square>getThreads(){
+    public ArrayList<Square> getThreads() {
         return this.threads;
     }
 
-    public CPlayer getColor(){
-        return this.color;
+    public Player getPlayer() {
+        return this.player;
     }
 }

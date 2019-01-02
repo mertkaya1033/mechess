@@ -39,16 +39,6 @@ public class Square {
             g.setColor(Color.GREEN);
             for (int i = 0; i < 3; i++)
                 g.drawRect(x + i, y + i, Constants.SQUARE_SIZE - (i * 2), Constants.SQUARE_SIZE - (i * 2));
-            if (piece != null && showThreats) {
-                ArrayList<Square> th = piece.getThreads();
-                for (int i = 0; i < th.size(); i++) {
-                    th.get(i).setThePieceCanMove(piece);
-                }
-            }
-        } else if (piece != null) {
-            for (int i = 0; i < piece.getThreads().size(); i++) {
-                piece.getThreads().get(i).setThePieceCanMove(piece);
-            }
         }
 
         if (thePieceCanMove != null) {
@@ -61,6 +51,7 @@ public class Square {
             g.fillOval(elX, elY, elSize, elSize);
 
         }
+
 
     }
 
@@ -84,6 +75,10 @@ public class Square {
         this.threads.add(piece);
     }
 
+    public void emptyThreats(){
+        this.threads = new ArrayList<>();
+    }
+
     public void setThePieceCanMove(Piece piece) {
         this.thePieceCanMove = piece;
     }
@@ -94,11 +89,18 @@ public class Square {
 
     public void clicked(boolean showThreatsForPiece) {
         this.selected = !this.selected;
-        if(thePieceCanMove != null){
-            thePieceCanMove.move(this);
-
-        }
         showThreats = showThreatsForPiece;
+        if (selected && piece != null && showThreats) {
+            ArrayList<Square> th = piece.getThreads();
+            for (int i = 0; i < th.size(); i++) {
+                th.get(i).setThePieceCanMove(piece);
+            }
+        }else{
+            ArrayList<Square> th = piece.getThreads();
+            for (int i = 0; i < th.size(); i++) {
+                th.get(i).setThePieceCanMove(null);
+            }
+        }
     }
 
 }

@@ -47,6 +47,7 @@ public abstract class Piece {
             this.position = pos.getPos();
             this.currentSquare.setPiece(null);
             this.currentSquare = pos;
+            this.index = this.currentSquare.getIndex();
             pos.setPiece(this);
         }
     }
@@ -65,5 +66,9 @@ public abstract class Piece {
 
     public Player getPlayer() {
         return this.player;
+    }
+
+    public CPlayer getColor(){
+        return this.player.getColor();
     }
 }

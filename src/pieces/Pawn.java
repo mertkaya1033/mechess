@@ -25,7 +25,6 @@ public class Pawn extends Piece {
             //one move ahead check
             indexCheck = index[0] - 1 >= 0;
             if (indexCheck && board[index[0] - 1][index[1]].isPieceNull()) {
-
                 threads.add(board[index[0] - 1][index[1]]);
                 board[index[0] - 1][index[1]].addThreat(this);
                 //two move ahead check
@@ -101,6 +100,12 @@ public class Pawn extends Piece {
             }
 
         }
+    }
+    @Override
+    public void move(Square pos){
+        super.move(pos);
+        if(this.currentSquare == pos)
+            this.firstMove = false;
     }
 
 }

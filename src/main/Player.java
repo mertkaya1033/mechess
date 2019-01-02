@@ -50,16 +50,16 @@ public class Player {
     public Piece.CPlayer getColor() {
         return color;
     }
-    //work here
-    public void clicked(MouseEvent event) {
-        Square clickedSquare = this.board.getClickedSquare(event);
-        if (clickedSquare != null && pieces.contains(clickedSquare.getPiece())) {
-            board.selectSquare(clickedSquare, true);
-        } else if (clickedSquare != null && clickedSquare.getThePieceCanMove() != null) {
-            clickedSquare.getThePieceCanMove().move(clickedSquare);
-            for (Piece piece : this.pieces) {
-                piece.occupy(board);
-            }
+
+    public void move(Piece piece, Square square) {
+        if (this.pieces.contains(piece)) {
+            piece.move(square);
+        }
+    }
+
+    public void occupy(Board board){
+        for(Piece piece: this.pieces){
+            piece.occupy(board);
         }
     }
 }

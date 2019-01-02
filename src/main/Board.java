@@ -54,10 +54,42 @@ public class Board {
     }
 
     public void clicked(MouseEvent event) {
-        if (whiteTurn) {
-            whitePlayer.clicked(event);
-        } else {
-            blackPlayer.clicked(event);
+        Square clickedSquare = this.getClickedSquare(event);
+
+        if (clickedSquare != null && clickedSquare.getThePieceCanMove() == null && selectedSquare == null) {
+
+            selectedSquare = clickedSquare;
+            Piece clickedPiece = selectedSquare.getPiece();
+            if (clickedPiece != null) {
+                selectedSquare.clicked(whiteTurn == (clickedPiece.getColor() == Piece.CPlayer.white));
+            } else {
+                selectedSquare.clicked(false);
+            }
+
+        } else if (clickedSquare != null && selectedSquare == clickedSquare) {
+
+            selectedSquare.clicked(false);
+            selectedSquare = null;
+
+        } else if (clickedSquare != null && clickedSquare.getThePieceCanMove() != null && selectedSquare != null) {
+
+            Piece piece = selectedSquare.getPiece();
+            selectedSquare.clicked(false);
+            selectedSquare = null;
+            if (whiteTurn) {
+                whitePlayer.move(piece, clickedSquare);
+            } else {
+                blackPlayer.move(piece, clickedSquare);
+            }
+            for (int row = 0; row < board.length; row++) {
+                for (int col = 0; col < board[row].length; col++) {
+                    board[row][col].emptyThreats();
+                }
+            }
+            whitePlayer.occupy(this);
+            blackPlayer.occupy(this);
+            whiteTurn = !whiteTurn;
+
         }
     }
 
@@ -73,15 +105,5 @@ public class Board {
             s = board[(mouseY - this.y) / Constants.SQUARE_SIZE][(mouseX - this.x) / Constants.SQUARE_SIZE];
         }
         return s;
-    }
-
-    public void selectSquare(Square s, boolean showThreats) {
-        if (selectedSquare == null) {
-            selectedSquare = s;
-            selectedSquare.clicked(showThreats);
-        } else if (selectedSquare == s) {
-            selectedSquare.clicked(showThreats);
-            selectedSquare = null;
-        }
     }
 }

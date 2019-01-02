@@ -20,7 +20,7 @@ public class Pawn extends Piece {
         threads = new ArrayList<>();
         Square[][] board = b.getBoard();
 
-        if (this.player.getColor() == CPlayer.white) {
+        if (this.getColor() == CPlayer.white) {
             //movement
             //one move ahead check
             indexCheck = index[0] - 1 >= 0;

@@ -17,7 +17,7 @@ public class Pawn extends Piece {
         boolean indexCheck;
         boolean isSameColor;
 
-        threads = new ArrayList<>();
+        possibleMovementSquares = new ArrayList<>();
         Square[][] board = b.getBoard();
 
         if (this.getColor() == CPlayer.white) {
@@ -25,13 +25,11 @@ public class Pawn extends Piece {
             //one move ahead check
             indexCheck = index[0] - 1 >= 0;
             if (indexCheck && board[index[0] - 1][index[1]].isPieceNull()) {
-                threads.add(board[index[0] - 1][index[1]]);
-                board[index[0] - 1][index[1]].addThreat(this);
+                possibleMovementSquares.add(board[index[0] - 1][index[1]]);
                 //two move ahead check
                 indexCheck = index[0] - 2 >= 0;
                 if (firstMove && indexCheck && board[index[0] - 2][index[1]].isPieceNull()) {
-                    threads.add(board[index[0] - 2][index[1]]);
-                    board[index[0] - 2][index[1]].addThreat(this);
+                    possibleMovementSquares.add(board[index[0] - 2][index[1]]);
                 }
             }
 
@@ -43,7 +41,7 @@ public class Pawn extends Piece {
                 isSameColor = true;
             }
             if (!isSameColor) {
-                threads.add(board[index[0] - 1][index[1] - 1]);
+                possibleMovementSquares.add(board[index[0] - 1][index[1] - 1]);
                 board[index[0] - 1][index[1] - 1].addThreat(this);
             }
 
@@ -55,7 +53,7 @@ public class Pawn extends Piece {
                 isSameColor = true;
             }
             if (!isSameColor) {
-                threads.add(board[index[0] - 1][index[1] + 1]);
+                possibleMovementSquares.add(board[index[0] - 1][index[1] + 1]);
                 board[index[0] - 1][index[1] + 1].addThreat(this);
             }
 
@@ -65,13 +63,11 @@ public class Pawn extends Piece {
             indexCheck = index[0] + 1 <= board.length - 1;
             if (indexCheck && board[index[0] + 1][index[1]].isPieceNull()) {
 
-                threads.add(board[index[0] + 1][index[1]]);
-                board[index[0] + 1][index[1]].addThreat(this);
+                possibleMovementSquares.add(board[index[0] + 1][index[1]]);
                 //two move ahead check
                 indexCheck = index[0] + 2 <= board.length - 1;
                 if (firstMove && indexCheck && board[index[0] + 2][index[1]].isPieceNull()) {
-                    threads.add(board[index[0] + 2][index[1]]);
-                    board[index[0] + 2][index[1]].addThreat(this);
+                    possibleMovementSquares.add(board[index[0] + 2][index[1]]);
                 }
             }
 
@@ -83,7 +79,7 @@ public class Pawn extends Piece {
                 isSameColor = true;
             }
             if (!isSameColor) {
-                threads.add(board[index[0] + 1][index[1] - 1]);
+                possibleMovementSquares.add(board[index[0] + 1][index[1] - 1]);
                 board[index[0] + 1][index[1] - 1].addThreat(this);
             }
 
@@ -95,7 +91,7 @@ public class Pawn extends Piece {
                 isSameColor = true;
             }
             if (!isSameColor) {
-                threads.add(board[index[0] + 1][index[1] + 1]);
+                possibleMovementSquares.add(board[index[0] + 1][index[1] + 1]);
                 board[index[0] + 1][index[1] + 1].addThreat(this);
             }
 

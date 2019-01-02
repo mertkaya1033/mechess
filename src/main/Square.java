@@ -7,12 +7,14 @@ import java.util.ArrayList;
 public class Square {
     private String position;
     private int index[];
-    private ArrayList<Piece> threads = new ArrayList<>();
+    private ArrayList<Piece> threats = new ArrayList<>();
     private Piece piece = null;
     private Color color;
     private Piece thePieceCanMove = null;
     private boolean selected = false;
     private boolean showThreats = false;
+    private boolean underThreatByWhite = false;
+    private boolean underThreatByBlack = false;
 
     public Square(String pos, int[] index, boolean isDark) {
         this.index = index;
@@ -72,11 +74,11 @@ public class Square {
     }
 
     public void addThreat(Piece piece) {
-        this.threads.add(piece);
+        this.threats.add(piece);
     }
 
-    public void emptyThreats(){
-        this.threads = new ArrayList<>();
+    public void emptyThreats() {
+        this.threats = new ArrayList<>();
     }
 
     public void setThePieceCanMove(Piece piece) {
@@ -91,16 +93,32 @@ public class Square {
         this.selected = !this.selected;
         showThreats = showThreatsForPiece;
         if (selected && piece != null && showThreats) {
-            ArrayList<Square> th = piece.getThreads();
+            ArrayList<Square> th = piece.getPossibleMovementSquares();
             for (int i = 0; i < th.size(); i++) {
                 th.get(i).setThePieceCanMove(piece);
             }
-        }else{
-            ArrayList<Square> th = piece.getThreads();
+        } else {
+            ArrayList<Square> th = piece.getPossibleMovementSquares();
             for (int i = 0; i < th.size(); i++) {
                 th.get(i).setThePieceCanMove(null);
             }
         }
+    }
+
+    public void checkThreatsByPlayers() {
+        underThreatByWhite = false;
+        underThreatByBlack = false;
+        for (Piece piece : threats) {
+            underThreatByWhite = underThreatByWhite || piece.getColor() == Piece.CPlayer.white;
+            underThreatByBlack = underThreatByBlack || piece.getColor() == Piece.CPlayer.black;
+            if (underThreatByBlack && underThreatByWhite) {
+                break;
+            }
+        }
+    }
+
+    public boolean isUnderThreat(Piece.CPlayer playerColor) {
+        return (playerColor == Piece.CPlayer.white) ? this.underThreatByBlack : this.underThreatByWhite;
     }
 
 }

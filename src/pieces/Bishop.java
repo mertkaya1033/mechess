@@ -15,7 +15,7 @@ public class Bishop extends Piece {
 
     @Override
     public void occupy(Board board) {
-        threads = new ArrayList<>();
+        possibleMovementSquares = new ArrayList<>();
         addDiagonalThreats(board.getBoard(), index, true, true);
         addDiagonalThreats(board.getBoard(), index, true, false);
         addDiagonalThreats(board.getBoard(), index, false, true);
@@ -38,11 +38,11 @@ public class Bishop extends Piece {
         boolean indexCheck = nextIndex[0] >= 0 && nextIndex[0] < board.length && nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
 
         if (indexCheck && board[nextIndex[0]][nextIndex[1]].isPieceNull()) {
-            threads.add(board[nextIndex[0]][nextIndex[1]]);
+            possibleMovementSquares.add(board[nextIndex[0]][nextIndex[1]]);
             board[nextIndex[0]][nextIndex[1]].addThreat(this);
             addDiagonalThreats(board, nextIndex, goingUp, goingRight);
         } else if (indexCheck && board[nextIndex[0]][nextIndex[1]].getPiece().getPlayer() != this.player) {
-            threads.add(board[nextIndex[0]][nextIndex[1]]);
+            possibleMovementSquares.add(board[nextIndex[0]][nextIndex[1]]);
             board[nextIndex[0]][nextIndex[1]].addThreat(this);
         }
 

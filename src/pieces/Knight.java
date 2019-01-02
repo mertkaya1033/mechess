@@ -14,7 +14,7 @@ public class Knight extends Piece {
 
     @Override
     public void occupy(Board board) {
-        threads = new ArrayList<>();
+        possibleMovementSquares = new ArrayList<>();
         addThreats(board.getBoard(), new int[]{1, -1, 2, -2});
     }
 
@@ -29,7 +29,7 @@ public class Knight extends Piece {
                     possibleThreat = indexCheck && !board[index[0] + i][index[1] + j].isPieceNull() &&
                             board[index[0] + i][index[1] + j].getPiece().getPlayer() != this.player;
                     if ((indexCheck && board[index[0] + i][index[1] + j].isPieceNull()) || possibleThreat) {
-                        threads.add(board[index[0] + i][index[1] + j]);
+                        possibleMovementSquares.add(board[index[0] + i][index[1] + j]);
                         board[index[0] + i][index[1] + j].addThreat(this);
                     }
                 }

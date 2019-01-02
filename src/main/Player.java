@@ -45,6 +45,11 @@ public class Player {
         for (Piece piece : this.pieces) {
             piece.occupy(board);
         }
+        for (Square[] number: board.getBoard()){
+            for (Square letter: number){
+                letter.checkThreatsByPlayers();
+            }
+        }
     }
 
     public Piece.CPlayer getColor() {
@@ -54,6 +59,11 @@ public class Player {
     public void move(Piece piece, Square square) {
         if (this.pieces.contains(piece)) {
             piece.move(square);
+            for (Square[] number: board.getBoard()){
+                for (Square letter: number){
+                    letter.checkThreatsByPlayers();
+                }
+            }
         }
     }
 

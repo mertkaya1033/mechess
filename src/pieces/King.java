@@ -14,7 +14,7 @@ public class King extends Piece {
 
     @Override
     public void occupy(Board b) {
-        threads = new ArrayList<>();
+        possibleMovementSquares = new ArrayList<>();
         Square[][] board = b.getBoard();
         boolean indexCheck;
         boolean possibleThreat;
@@ -25,8 +25,10 @@ public class King extends Piece {
                         && !(i == 0 && j == 0);
                 possibleThreat = indexCheck && !board[index[0] + i][index[1] + j].isPieceNull() &&
                         board[index[0] + i][index[1] + j].getPiece().getPlayer() != this.player;
-                if ((indexCheck && board[index[0] + i][index[1] + j].isPieceNull()) || possibleThreat) {
-                    threads.add(board[index[0] + i][index[1] + j]);
+
+                if (((indexCheck && board[index[0] + i][index[1] + j].isPieceNull()) || possibleThreat) &&
+                        !board[index[0] + i][index[1] + j].isUnderThreat(this.getColor())) {
+                    possibleMovementSquares.add(board[index[0] + i][index[1] + j]);
                     board[index[0] + i][index[1] + j].addThreat(this);
                 }
             }

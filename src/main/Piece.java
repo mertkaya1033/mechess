@@ -15,8 +15,16 @@ public abstract class Piece {
         white, black
     }
 
+    /**
+     * ------ ADD POSSIBLE MOVEMENT FOR EACH SQUARE
+     * <p>
+     * ------ MAKE SURE EVEN THOUGH THE PIECE CANT MOVE TO THE SQUARE, IT MIGHT THREATEN THAT
+     * SQUARE SO THAT THE OPPONENT'S KING CANT MOVE TO THAT SQUARE
+     */
+
+
     protected Type type;
-    protected ArrayList<Square> threads;
+    protected ArrayList<Square> possibleMovementSquares;
     protected String position;
     protected int index[];
     protected Image image;
@@ -31,7 +39,7 @@ public abstract class Piece {
         String imageName = "src/images/" + player.getColor().toString() + "_" + type.toString() + ".png";
         this.image = new ImageIcon(imageName).getImage();
         this.image = this.image.getScaledInstance(Constants.SQUARE_SIZE, Constants.SQUARE_SIZE, 0);
-        this.threads = new ArrayList<>();
+        this.possibleMovementSquares = new ArrayList<>();
     }
 
     public abstract void occupy(Board board);
@@ -43,7 +51,7 @@ public abstract class Piece {
 
 
     public void move(Square pos) {
-        if (threads.contains(pos)) {
+        if (possibleMovementSquares.contains(pos)) {
             this.position = pos.getPos();
             this.currentSquare.setPiece(null);
             this.currentSquare = pos;
@@ -60,15 +68,15 @@ public abstract class Piece {
         g.drawImage(this.image, x, y, null);
     }
 
-    public ArrayList<Square> getThreads() {
-        return this.threads;
+    public ArrayList<Square> getPossibleMovementSquares() {
+        return this.possibleMovementSquares;
     }
 
     public Player getPlayer() {
         return this.player;
     }
 
-    public CPlayer getColor(){
+    public CPlayer getColor() {
         return this.player.getColor();
     }
 }

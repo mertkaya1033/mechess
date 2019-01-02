@@ -14,7 +14,7 @@ public class Rook extends Piece {
 
     @Override
     public void occupy(Board board) {
-        threads = new ArrayList<>();
+        possibleMovementSquares = new ArrayList<>();
         addHorizontalThreats(board.getBoard(), index, true);
         addHorizontalThreats(board.getBoard(), index, false);
         addVerticalThreats(board.getBoard(), index, true);
@@ -34,13 +34,13 @@ public class Rook extends Piece {
 
         if (indexCheck && board[nextIndex[0]][nextIndex[1]].isPieceNull()) {
 
-            threads.add(board[nextIndex[0]][nextIndex[1]]);
+            possibleMovementSquares.add(board[nextIndex[0]][nextIndex[1]]);
             board[nextIndex[0]][nextIndex[1]].addThreat(this);
             addHorizontalThreats(board, nextIndex, goingUp);
 
         } else if (indexCheck && board[nextIndex[0]][nextIndex[1]].getPiece().getPlayer() != this.player) {
 
-            threads.add(board[nextIndex[0]][nextIndex[1]]);
+            possibleMovementSquares.add(board[nextIndex[0]][nextIndex[1]]);
             board[nextIndex[0]][nextIndex[1]].addThreat(this);
 
         }
@@ -60,13 +60,13 @@ public class Rook extends Piece {
 
         if (indexCheck && board[nextIndex[0]][nextIndex[1]].isPieceNull()) {
 
-            threads.add(board[nextIndex[0]][nextIndex[1]]);
+            possibleMovementSquares.add(board[nextIndex[0]][nextIndex[1]]);
             board[nextIndex[0]][nextIndex[1]].addThreat(this);
             addVerticalThreats(board, nextIndex, goingRight);
 
         } else if (indexCheck && board[nextIndex[0]][nextIndex[1]].getPiece().getPlayer() != this.player) {
 
-            threads.add(board[nextIndex[0]][nextIndex[1]]);
+            possibleMovementSquares.add(board[nextIndex[0]][nextIndex[1]]);
             board[nextIndex[0]][nextIndex[1]].addThreat(this);
         }
     }

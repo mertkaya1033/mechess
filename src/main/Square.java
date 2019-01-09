@@ -8,6 +8,7 @@ public class Square {
     private String position;
     private int index[];
     private ArrayList<Piece> threats = new ArrayList<>();
+    private ArrayList<Piece> possibleMovement = new ArrayList<>();
     private Piece piece = null;
     private Color color;
     private Piece thePieceCanMove = null;
@@ -79,6 +80,19 @@ public class Square {
 
     public void emptyThreats() {
         this.threats = new ArrayList<>();
+    }
+
+    /**
+     *
+     * WORK ON THIS PART
+     *
+     */
+    public void addPossibleMovement(Piece piece){
+        this.possibleMovement.add(piece);
+    }
+
+    public void emptyPossibleMovement(){
+        this.possibleMovement = new ArrayList<>();
     }
 
     public void setThePieceCanMove(Piece piece) {

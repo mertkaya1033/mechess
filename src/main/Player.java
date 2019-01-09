@@ -32,10 +32,10 @@ public class Player {
         this.pieces.add(new Knight("b" + num, this));
         this.pieces.add(new Bishop("c" + num, this));
         this.pieces.add(new Queen("d" + num, this));
-        this.pieces.add(new King("e" + num, this));
         this.pieces.add(new Bishop("f" + num, this));
         this.pieces.add(new Knight("g" + num, this));
         this.pieces.add(new Rook("h" + num, this));
+        this.pieces.add(new King("e" + num, this));
 
 
         for (Piece piece : this.pieces) {

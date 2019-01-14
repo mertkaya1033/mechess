@@ -31,6 +31,12 @@ public abstract class Piece {
     protected Square currentSquare = null;
     protected Player player;
 
+    /**
+     *
+     * @param position
+     * @param player
+     * @param type
+     */
     public Piece(String position, Player player, Type type) {
         this.position = position;
         this.type = type;
@@ -42,14 +48,25 @@ public abstract class Piece {
         this.possibleMovementSquares = new ArrayList<>();
     }
 
+    /**
+     *
+     * @param board
+     */
     public abstract void occupy(Board board);
 
+    /**
+     *
+     * @param square
+     */
     public void setCurrentSquare(Square square) {
         this.currentSquare = square;
         this.index = square.getIndex();
     }
 
-
+    /**
+     *
+     * @param pos
+     */
     public void move(Square pos) {
         if (possibleMovementSquares.contains(pos)) {
             this.position = pos.getPos();
@@ -60,22 +77,44 @@ public abstract class Piece {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public String getPosition() {
         return this.position;
     }
 
+    /**
+     *
+     * @param g
+     * @param x
+     * @param y
+     */
     public void display(Graphics g, int x, int y) {
         g.drawImage(this.image, x, y, null);
     }
 
+    /**
+     *
+     * @return
+     */
     public ArrayList<Square> getPossibleMovementSquares() {
         return this.possibleMovementSquares;
     }
 
+    /**
+     *
+     * @return
+     */
     public Player getPlayer() {
         return this.player;
     }
 
+    /**
+     *
+     * @return
+     */
     public CPlayer getColor() {
         return this.player.getColor();
     }

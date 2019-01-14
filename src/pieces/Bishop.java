@@ -38,12 +38,20 @@ public class Bishop extends Piece {
         boolean indexCheck = nextIndex[0] >= 0 && nextIndex[0] < board.length && nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
 
         if (indexCheck && board[nextIndex[0]][nextIndex[1]].isPieceNull()) {
+
             possibleMovementSquares.add(board[nextIndex[0]][nextIndex[1]]);
             board[nextIndex[0]][nextIndex[1]].addThreat(this);
             addDiagonalThreats(board, nextIndex, goingUp, goingRight);
+
         } else if (indexCheck && board[nextIndex[0]][nextIndex[1]].getPiece().getPlayer() != this.player) {
+
             possibleMovementSquares.add(board[nextIndex[0]][nextIndex[1]]);
             board[nextIndex[0]][nextIndex[1]].addThreat(this);
+
+        } else if (indexCheck) {
+
+            board[nextIndex[0]][nextIndex[1]].addPossibleMovement(this);
+
         }
 
 

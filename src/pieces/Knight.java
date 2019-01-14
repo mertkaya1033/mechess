@@ -24,13 +24,19 @@ public class Knight extends Piece {
         for (int i : range) {
             for (int j : range) {
                 if (Math.abs(i) != Math.abs(j)) {
+
                     indexCheck = index[0] + i >= 0 && index[0] + i < board.length &&
                             index[1] + j >= 0 && index[1] + j < board[index[0]].length;
-                    possibleThreat = indexCheck && !board[index[0] + i][index[1] + j].isPieceNull() &&
-                            board[index[0] + i][index[1] + j].getPiece().getPlayer() != this.player;
-                    if ((indexCheck && board[index[0] + i][index[1] + j].isPieceNull()) || possibleThreat) {
-                        possibleMovementSquares.add(board[index[0] + i][index[1] + j]);
-                        board[index[0] + i][index[1] + j].addThreat(this);
+                    if(indexCheck){
+                        possibleThreat = !board[index[0] + i][index[1] + j].isPieceNull() &&
+                                board[index[0] + i][index[1] + j].getPiece().getPlayer() != this.player;
+
+                        if (board[index[0] + i][index[1] + j].isPieceNull() || possibleThreat) {
+                            possibleMovementSquares.add(board[index[0] + i][index[1] + j]);
+                            board[index[0] + i][index[1] + j].addThreat(this);
+                        } else {
+                            board[index[0] + i][index[1] + j].addPossibleMovement(this);
+                        }
                     }
                 }
             }

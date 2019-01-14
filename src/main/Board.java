@@ -12,6 +12,9 @@ public class Board {
     private boolean whiteTurn = true;
     private int x, y;
 
+    /**
+     *
+     */
     public Board() {
 
         this.x = (Constants.FRAME_WIDTH - Constants.BOARD_SIZE) / 2;
@@ -36,23 +39,43 @@ public class Board {
         }
     }
 
+    /**
+     * @param g
+     */
     public void display(Graphics g) {
-
-        for (int row = 0; row < board.length; row++) {
-            for (int col = 0; col < board[row].length; col++) {
-                board[row][col].display(g, col * Constants.SQUARE_SIZE + this.x, row * Constants.SQUARE_SIZE + this.y);
+        if (whiteTurn) {
+            for (int row = 0; row < board.length; row++) {
+                for (int col = 0; col < board[row].length; col++) {
+                    board[row][col].display(g, col * Constants.SQUARE_SIZE + this.x, row * Constants.SQUARE_SIZE + this.y);
+                }
+            }
+        } else {
+            for (int row = 0; row < board.length; row++) {
+                for (int col = 0; col < board[row].length; col++) {
+                    board[row][col].display(g, col * Constants.SQUARE_SIZE + this.x, (board.length - row - 1) * Constants.SQUARE_SIZE + this.y);
+                }
             }
         }
     }
 
+    /**
+     * @return
+     */
     public Square[][] getBoard() {
         return this.board;
     }
 
+    /**
+     * @param pos
+     * @return
+     */
     public Square findSquare(String pos) {
         return board[board.length - Integer.parseInt(pos.charAt(1) + "")][(((int) pos.charAt(0)) - 97)];
     }
 
+    /**
+     * @param event
+     */
     public void clicked(MouseEvent event) {
         Square clickedSquare = this.getClickedSquare(event);
 
@@ -84,15 +107,25 @@ public class Board {
             for (int row = 0; row < board.length; row++) {
                 for (int col = 0; col < board[row].length; col++) {
                     board[row][col].emptyThreats();
+                    board[row][col].emptyPossibleMovement();
                 }
             }
+            /**BUG BUG BUG**/
             whitePlayer.occupy(this);
             blackPlayer.occupy(this);
+            whitePlayer.occupyKing(this);
+            blackPlayer.occupyKing(this);
+            whitePlayer.checkKingThreats();
+            blackPlayer.checkKingThreats();
             whiteTurn = !whiteTurn;
 
         }
     }
 
+    /**
+     * @param event
+     * @return
+     */
     public Square getClickedSquare(MouseEvent event) {
 
         int mouseX = event.getX();
@@ -102,7 +135,9 @@ public class Board {
         boolean yInBounds = (mouseY >= this.y && mouseY <= this.y + Constants.BOARD_SIZE);
         Square s = null;
         if (xInBounds && yInBounds) {
-            s = board[(mouseY - this.y) / Constants.SQUARE_SIZE][(mouseX - this.x) / Constants.SQUARE_SIZE];
+            int row = (whiteTurn) ? ((mouseY - this.y) / Constants.SQUARE_SIZE) : (board.length - 1 - ((mouseY - this.y) / Constants.SQUARE_SIZE));
+            int col = (mouseX - this.x) / Constants.SQUARE_SIZE;
+            s = board[row][col];
         }
         return s;
     }

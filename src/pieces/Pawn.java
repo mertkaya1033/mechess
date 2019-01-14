@@ -7,11 +7,18 @@ import java.util.ArrayList;
 public class Pawn extends Piece {
     private boolean firstMove;
 
+    /**
+     * @param position
+     * @param player
+     */
     public Pawn(String position, Player player) {
         super(position, player, Type.PAWN);
         this.firstMove = true;
     }
 
+    /**
+     * @param b
+     */
     @Override
     public void occupy(Board b) {
         boolean indexCheck;
@@ -36,25 +43,32 @@ public class Pawn extends Piece {
             //capture
             indexCheck = index[0] - 1 >= 0 && index[1] - 1 >= 0;
             if (indexCheck && !board[index[0] - 1][index[1] - 1].isPieceNull()) {
-                isSameColor = board[index[0] - 1][index[1] - 1].getPiece().getPlayer() == this.player;
+                isSameColor = board[index[0] - 1][index[1] - 1].getPiece().getColor() == this.player.getColor();
             } else {
                 isSameColor = true;
             }
+
             if (!isSameColor) {
                 possibleMovementSquares.add(board[index[0] - 1][index[1] - 1]);
                 board[index[0] - 1][index[1] - 1].addThreat(this);
+            } else if (indexCheck) {
+                board[index[0] - 1][index[1] - 1].addThreat(this);
+                board[index[0] - 1][index[1] - 1].addPossibleMovement(this);
             }
 
             //capture
             indexCheck = index[0] - 1 >= 0 && index[1] + 1 <= board.length - 1;
             if (indexCheck && !board[index[0] - 1][index[1] + 1].isPieceNull()) {
-                isSameColor = board[index[0] - 1][index[1] + 1].getPiece().getPlayer() == this.player;
+                isSameColor = board[index[0] - 1][index[1] + 1].getPiece().getColor() == this.player.getColor();
             } else {
                 isSameColor = true;
             }
             if (!isSameColor) {
                 possibleMovementSquares.add(board[index[0] - 1][index[1] + 1]);
                 board[index[0] - 1][index[1] + 1].addThreat(this);
+            } else if (indexCheck) {
+                board[index[0] - 1][index[1] + 1].addThreat(this);
+                board[index[0] - 1][index[1] + 1].addPossibleMovement(this);
             }
 
         } else {
@@ -74,33 +88,43 @@ public class Pawn extends Piece {
             //capture
             indexCheck = index[0] + 1 <= board.length - 1 && index[1] - 1 >= 0;
             if (indexCheck && !board[index[0] + 1][index[1] - 1].isPieceNull()) {
-                isSameColor = board[index[0] + 1][index[1] - 1].getPiece().getPlayer() == this.player;
+                isSameColor = board[index[0] + 1][index[1] - 1].getPiece().getColor() == this.player.getColor();
             } else {
                 isSameColor = true;
             }
             if (!isSameColor) {
                 possibleMovementSquares.add(board[index[0] + 1][index[1] - 1]);
                 board[index[0] + 1][index[1] - 1].addThreat(this);
+            } else if (indexCheck) {
+                board[index[0] + 1][index[1] - 1].addThreat(this);
+                board[index[0] + 1][index[1] - 1].addPossibleMovement(this);
             }
 
             //capture
             indexCheck = index[0] + 1 <= board.length - 1 && index[1] + 1 <= board.length - 1;
             if (indexCheck && !board[index[0] + 1][index[1] + 1].isPieceNull()) {
-                isSameColor = board[index[0] + 1][index[1] + 1].getPiece().getPlayer() == this.player;
+                isSameColor = board[index[0] + 1][index[1] + 1].getPiece().getColor() == this.player.getColor();
             } else {
                 isSameColor = true;
             }
             if (!isSameColor) {
                 possibleMovementSquares.add(board[index[0] + 1][index[1] + 1]);
                 board[index[0] + 1][index[1] + 1].addThreat(this);
+            } else if (indexCheck) {
+                board[index[0] + 1][index[1] + 1].addThreat(this);
+                board[index[0] + 1][index[1] + 1].addPossibleMovement(this);
             }
 
         }
     }
+
+    /**
+     * @param pos
+     */
     @Override
-    public void move(Square pos){
+    public void move(Square pos) {
         super.move(pos);
-        if(this.currentSquare == pos)
+        if (this.currentSquare == pos)
             this.firstMove = false;
     }
 

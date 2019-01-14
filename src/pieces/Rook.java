@@ -43,6 +43,8 @@ public class Rook extends Piece {
             possibleMovementSquares.add(board[nextIndex[0]][nextIndex[1]]);
             board[nextIndex[0]][nextIndex[1]].addThreat(this);
 
+        } else if (indexCheck) {
+            board[nextIndex[0]][nextIndex[1]].addPossibleMovement(this);
         }
 
     }
@@ -68,6 +70,8 @@ public class Rook extends Piece {
 
             possibleMovementSquares.add(board[nextIndex[0]][nextIndex[1]]);
             board[nextIndex[0]][nextIndex[1]].addThreat(this);
+        } else if (indexCheck) {
+            board[nextIndex[0]][nextIndex[1]].addPossibleMovement(this);
         }
     }
 }

@@ -14,9 +14,12 @@ public class Square {
     private Piece thePieceCanMove = null;
     private boolean selected = false;
     private boolean showThreats = false;
-    private boolean underThreatByWhite = false;
-    private boolean underThreatByBlack = false;
 
+    /**
+     * @param pos
+     * @param index
+     * @param isDark
+     */
     public Square(String pos, int[] index, boolean isDark) {
         this.index = index;
         this.position = pos;
@@ -26,10 +29,18 @@ public class Square {
             this.color = Color.white;
     }
 
+    /**
+     * @return
+     */
     public String getPos() {
         return this.position;
     }
 
+    /**
+     * @param g
+     * @param x
+     * @param y
+     */
     public void display(Graphics g, int x, int y) {
 
         g.setColor(this.color);
@@ -58,51 +69,112 @@ public class Square {
 
     }
 
+    /**
+     * @param piece
+     */
     public void setPiece(Piece piece) {
         this.piece = piece;
     }
 
+    /**
+     * @return
+     */
     public Piece getPiece() {
         return this.piece;
     }
 
+    /**
+     * @return
+     */
     public boolean isPieceNull() {
         return this.piece == null;
     }
 
+    /**
+     * @return
+     */
     public int[] getIndex() {
         return this.index;
     }
 
+    /**
+     * @param piece
+     */
     public void addThreat(Piece piece) {
         this.threats.add(piece);
     }
 
+    /**
+     *
+     */
     public void emptyThreats() {
         this.threats = new ArrayList<>();
     }
 
+    public boolean isUnderThreat(Player player) {
+        Piece.CPlayer colo = (player.getColor() == Piece.CPlayer.white) ? Piece.CPlayer.black : Piece.CPlayer.white;
+        for (Piece piec : threats) {
+            if (piec.getColor() == colo) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public ArrayList<Piece>getThreats(){
+        return threats;
+    }
     /**
-     *
      * WORK ON THIS PART
-     *
      */
-    public void addPossibleMovement(Piece piece){
+    /*****************************************************************************************************************/
+
+    /**
+     * @param piece
+     */
+    public void addPossibleMovement(Piece piece) {
         this.possibleMovement.add(piece);
     }
 
-    public void emptyPossibleMovement(){
+    /**
+     *
+     */
+    public void emptyPossibleMovement() {
         this.possibleMovement = new ArrayList<>();
     }
 
+    public boolean isPossibleMovement(Player player) {
+        Piece.CPlayer color = (player.getColor() == Piece.CPlayer.white) ? Piece.CPlayer.black : Piece.CPlayer.white;
+        for (Piece piece : possibleMovement) {
+            if (piece.getColor() == color) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public ArrayList<Piece>getPossibleMovement() {
+        return possibleMovement;
+    }
+    /*****************************************************************************************************************/
+
+    /**
+     * @param piece
+     */
     public void setThePieceCanMove(Piece piece) {
         this.thePieceCanMove = piece;
     }
 
+    /**
+     * @return
+     */
     public Piece getThePieceCanMove() {
         return thePieceCanMove;
     }
 
+    /**
+     * @param showThreatsForPiece
+     */
     public void clicked(boolean showThreatsForPiece) {
         this.selected = !this.selected;
         showThreats = showThreatsForPiece;
@@ -111,28 +183,12 @@ public class Square {
             for (int i = 0; i < th.size(); i++) {
                 th.get(i).setThePieceCanMove(piece);
             }
-        } else {
+        } else if (piece != null) {
             ArrayList<Square> th = piece.getPossibleMovementSquares();
             for (int i = 0; i < th.size(); i++) {
                 th.get(i).setThePieceCanMove(null);
             }
         }
-    }
-
-    public void checkThreatsByPlayers() {
-        underThreatByWhite = false;
-        underThreatByBlack = false;
-        for (Piece piece : threats) {
-            underThreatByWhite = underThreatByWhite || piece.getColor() == Piece.CPlayer.white;
-            underThreatByBlack = underThreatByBlack || piece.getColor() == Piece.CPlayer.black;
-            if (underThreatByBlack && underThreatByWhite) {
-                break;
-            }
-        }
-    }
-
-    public boolean isUnderThreat(Piece.CPlayer playerColor) {
-        return (playerColor == Piece.CPlayer.white) ? this.underThreatByBlack : this.underThreatByWhite;
     }
 
 }

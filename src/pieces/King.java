@@ -36,6 +36,8 @@ public class King extends Piece {
                     if (isSquareUnderThreat || possibleThreat) {
                         possibleMovementSquares.add(board[index[0] + i][index[1] + j]);
                         board[index[0] + i][index[1] + j].addThreat(this);
+                    }else {
+                        board[index[0] + i][index[1] + j].addPossibleMovement(this);
                     }
                 }
             }

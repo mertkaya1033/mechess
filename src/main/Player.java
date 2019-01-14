@@ -2,7 +2,6 @@ package main;
 
 import pieces.*;
 
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 public class Player {
@@ -91,7 +90,8 @@ public class Player {
     }
 
     public void checkKingThreats() {
-        for (Square pMovement : king.getPossibleMovementSquares()) {
+        for (int i = 0; i < king.getPossibleMovementSquares().size();i++) {
+            Square pMovement = king.getPossibleMovementSquares().get(i);
             if (pMovement.isUnderThreat(this) || !pMovement.isPossibleMovement(this)) {
                 king.getPossibleMovementSquares().remove(pMovement);
 

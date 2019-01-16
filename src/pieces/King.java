@@ -31,12 +31,13 @@ public class King extends Piece {
                             board[index[0] + i][index[1] + j].isPossibleMovement(this.player);
 
                     isSquareUnderThreat = board[index[0] + i][index[1] + j].isPieceNull() &&
-                            !board[index[0] + i][index[1] + j].isUnderThreat(this.player);
+                            (board[index[0] + i][index[1] + j].isUnderThreat(this.player).isEmpty() &&
+                                    board[index[0] + i][index[1] + j].isPossibleMovement(this.player));
 
                     if (isSquareUnderThreat || possibleThreat) {
                         possibleMovementSquares.add(board[index[0] + i][index[1] + j]);
                         board[index[0] + i][index[1] + j].addThreat(this);
-                    }else {
+                    } else {
                         board[index[0] + i][index[1] + j].addPossibleMovement(this);
                     }
                 }

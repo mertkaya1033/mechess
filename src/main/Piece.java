@@ -15,16 +15,8 @@ public abstract class Piece {
         white, black
     }
 
-    /**
-     * ------ ADD POSSIBLE MOVEMENT FOR EACH SQUARE
-     * <p>
-     * ------ MAKE SURE EVEN THOUGH THE PIECE CANT MOVE TO THE SQUARE, IT MIGHT THREATEN THAT
-     * SQUARE SO THAT THE OPPONENT'S KING CANT MOVE TO THAT SQUARE
-     */
-
-
     protected Type type;
-    protected ArrayList<Square> possibleMovementSquares;
+    protected ArrayList<Square> possibleMovementSquares, pathAsAThreat;
     protected String position;
     protected int index[];
     protected Image image;
@@ -32,7 +24,6 @@ public abstract class Piece {
     protected Player player;
 
     /**
-     *
      * @param position
      * @param player
      * @param type
@@ -49,13 +40,14 @@ public abstract class Piece {
     }
 
     /**
-     *
      * @param board
      */
     public abstract void occupy(Board board);
 
+    public void emptyOccupies(){
+        possibleMovementSquares = new ArrayList<>();
+    }
     /**
-     *
      * @param square
      */
     public void setCurrentSquare(Square square) {
@@ -64,7 +56,6 @@ public abstract class Piece {
     }
 
     /**
-     *
      * @param pos
      */
     public void move(Square pos) {
@@ -78,7 +69,6 @@ public abstract class Piece {
     }
 
     /**
-     *
      * @return
      */
     public String getPosition() {
@@ -86,7 +76,6 @@ public abstract class Piece {
     }
 
     /**
-     *
      * @param g
      * @param x
      * @param y
@@ -96,7 +85,6 @@ public abstract class Piece {
     }
 
     /**
-     *
      * @return
      */
     public ArrayList<Square> getPossibleMovementSquares() {
@@ -104,7 +92,6 @@ public abstract class Piece {
     }
 
     /**
-     *
      * @return
      */
     public Player getPlayer() {
@@ -112,10 +99,24 @@ public abstract class Piece {
     }
 
     /**
-     *
      * @return
      */
     public CPlayer getColor() {
         return this.player.getColor();
+    }
+
+    /**
+     * @return
+     */
+    public Square getCurrentSquare() {
+        return this.currentSquare;
+    }
+
+    public void setPossibleMovementSquares(ArrayList<Square> possibleMovementSquares) {
+        this.possibleMovementSquares = possibleMovementSquares;
+    }
+
+    public Type getType() {
+        return this.type;
     }
 }

@@ -111,14 +111,20 @@ public class Square {
         this.threats = new ArrayList<>();
     }
 
-    public boolean isUnderThreat(Player player) {
+    /**
+     *
+     * @param player
+     * @return
+     */
+    public ArrayList<Piece> isUnderThreat(Player player) {
         Piece.CPlayer colo = (player.getColor() == Piece.CPlayer.white) ? Piece.CPlayer.black : Piece.CPlayer.white;
+        ArrayList<Piece> ret = new ArrayList<>();
         for (Piece piec : threats) {
             if (piec.getColor() == colo) {
-                return true;
+                ret.add(piec);
             }
         }
-        return false;
+        return ret;
     }
 
     public ArrayList<Piece>getThreats(){
@@ -191,4 +197,14 @@ public class Square {
         }
     }
 
+    public ArrayList<Piece> capturable(Player player){
+        ArrayList<Piece> p = new ArrayList<>();
+        Piece.CPlayer color = player.getColor();
+        for (Piece piec : threats) {
+            if (piec.getColor() == color) {
+                p.add(piec);
+            }
+        }
+        return p;
+    }
 }

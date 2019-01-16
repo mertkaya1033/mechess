@@ -23,7 +23,7 @@ public class Pawn extends Piece {
     public void occupy(Board b) {
         boolean indexCheck;
         boolean isSameColor;
-
+        boolean isCheck = false;
         possibleMovementSquares = new ArrayList<>();
         Square[][] board = b.getBoard();
 
@@ -49,10 +49,13 @@ public class Pawn extends Piece {
             }
 
             if (!isSameColor) {
+                if (!isCheck && !board[index[0] - 1][index[1] - 1].isPieceNull() && board[index[0] - 1][index[1] - 1].getPiece().getType() == Type.KING) {
+                    possibleMovementSquares = new ArrayList<>();
+                    isCheck = true;
+                }
                 possibleMovementSquares.add(board[index[0] - 1][index[1] - 1]);
                 board[index[0] - 1][index[1] - 1].addThreat(this);
             } else if (indexCheck) {
-                board[index[0] - 1][index[1] - 1].addThreat(this);
                 board[index[0] - 1][index[1] - 1].addPossibleMovement(this);
             }
 
@@ -64,10 +67,14 @@ public class Pawn extends Piece {
                 isSameColor = true;
             }
             if (!isSameColor) {
+                if (!isCheck && !board[index[0] - 1][index[1] + 1].isPieceNull() && board[index[0] - 1][index[1] + 1].getPiece().getType() == Type.KING) {
+                    possibleMovementSquares = new ArrayList<>();
+                    isCheck = true;
+                }
                 possibleMovementSquares.add(board[index[0] - 1][index[1] + 1]);
                 board[index[0] - 1][index[1] + 1].addThreat(this);
             } else if (indexCheck) {
-                board[index[0] - 1][index[1] + 1].addThreat(this);
+//                board[index[0] - 1][index[1] + 1].addThreat(this);
                 board[index[0] - 1][index[1] + 1].addPossibleMovement(this);
             }
 
@@ -93,10 +100,14 @@ public class Pawn extends Piece {
                 isSameColor = true;
             }
             if (!isSameColor) {
+                if (!isCheck && !board[index[0] + 1][index[1] - 1].isPieceNull() && board[index[0] + 1][index[1] - 1].getPiece().getType() == Type.KING) {
+                    possibleMovementSquares = new ArrayList<>();
+                    isCheck = true;
+                }
                 possibleMovementSquares.add(board[index[0] + 1][index[1] - 1]);
                 board[index[0] + 1][index[1] - 1].addThreat(this);
             } else if (indexCheck) {
-                board[index[0] + 1][index[1] - 1].addThreat(this);
+//                board[index[0] + 1][index[1] - 1].addThreat(this);
                 board[index[0] + 1][index[1] - 1].addPossibleMovement(this);
             }
 
@@ -108,10 +119,14 @@ public class Pawn extends Piece {
                 isSameColor = true;
             }
             if (!isSameColor) {
+                if (!isCheck && !board[index[0] + 1][index[1] + 1].isPieceNull() && board[index[0] + 1][index[1] + 1].getPiece().getType() == Type.KING) {
+                    possibleMovementSquares = new ArrayList<>();
+                    isCheck = true;
+                }
                 possibleMovementSquares.add(board[index[0] + 1][index[1] + 1]);
                 board[index[0] + 1][index[1] + 1].addThreat(this);
             } else if (indexCheck) {
-                board[index[0] + 1][index[1] + 1].addThreat(this);
+//                board[index[0] + 1][index[1] + 1].addThreat(this);
                 board[index[0] + 1][index[1] + 1].addPossibleMovement(this);
             }
 

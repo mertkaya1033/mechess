@@ -21,30 +21,9 @@ public class Board {
     public Board() {
 
         this.x = (Constants.FRAME_WIDTH - Constants.BOARD_SIZE) / 2;
-        this.y = (Constants.FRAME_HEIGHT - Constants.BOARD_SIZE) / 2;
+        this.y = 10;
 
-        for (int i = board.length - 1; i >= 0; i--) {
-            for (int j = board[i].length - 1; j >= 0; j--) {
-                boolean isDark = j % 2 != i % 2;
-                String pos = (char) (j + 97) + "" + (board.length - i);//ascii
-                board[i][j] = new Square(pos, new int[]{i, j}, isDark);
-            }
-        }
-
-        whitePlayer = new Player(Piece.Side.white, this);
-        blackPlayer = new Player(Piece.Side.black, this);
-
-        whitePlayer.checkKingMovements();
-        blackPlayer.checkKingMovements();
-
-        //prints the board with the address of each square
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                System.out.print(board[i][j].getPosition() + "\t");
-            }
-            System.out.println();
-        }
-
+        reset();
     }
 
     /**
@@ -210,5 +189,23 @@ public class Board {
 
     public Square[][] getBoard() {
         return board;
+    }
+    public void reset(){
+        for (int i = board.length - 1; i >= 0; i--) {
+            for (int j = board[i].length - 1; j >= 0; j--) {
+                boolean isDark = j % 2 != i % 2;
+                String pos = (char) (j + 97) + "" + (board.length - i);//ascii
+                board[i][j] = new Square(pos, new int[]{i, j}, isDark);
+            }
+        }
+
+        whitePlayer = new Player(Piece.Side.white, this);
+        blackPlayer = new Player(Piece.Side.black, this);
+
+        whitePlayer.checkKingMovements();
+        blackPlayer.checkKingMovements();
+        selectedSquare = null;
+        result = "on going";
+        whiteTurn = true;
     }
 }

@@ -8,11 +8,10 @@ import main.Square;
 import java.util.ArrayList;
 
 public class Rook extends Piece {
+
     public Rook(String position, Player player) {
         super(position, player, Type.ROOK);
     }
-
-    private ArrayList<ArrayList<Square>> pms = new ArrayList<>();
 
     @Override
     public void occupy(Board board) {
@@ -23,10 +22,10 @@ public class Rook extends Piece {
             pms.add(new ArrayList<>());
         }
 
-        addHorizontalThreats(board.getBoard(), index, true, 0);
-        addHorizontalThreats(board.getBoard(), index, false, 1);
-        addVerticalThreats(board.getBoard(), index, true, 2);
-        addVerticalThreats(board.getBoard(), index, false, 3);
+        addHorizontalThreats(board.getBoard(), currentSquare.getIndex(), true, 0);
+        addHorizontalThreats(board.getBoard(), currentSquare.getIndex(), false, 1);
+        addVerticalThreats(board.getBoard(), currentSquare.getIndex(), true, 2);
+        addVerticalThreats(board.getBoard(), currentSquare.getIndex(), false, 3);
 
         for (ArrayList<Square> c : pms) {
             if (!c.isEmpty() && !c.get(c.size() - 1).isPieceNull() && c.get(c.size() - 1).getPiece().getType() == Type.KING) {
@@ -34,64 +33,152 @@ public class Rook extends Piece {
                 break;
             }
         }
-
+        if (isPinned) {
+            setPinned(true);
+        }
     }
 
-    public void addHorizontalThreats(Square[][] board, int[] currentIndex, boolean goingUp, int pmsType) {
-        int[] nextIndex;
-        if (goingUp) {
-            nextIndex = new int[]{currentIndex[0] - 1, currentIndex[1]};
-        } else {
-            nextIndex = new int[]{currentIndex[0] + 1, currentIndex[1]};
+    private void addVerticalThreats(Square[][] board, int[] currentIndex, boolean goingUp, int pmsType) {
+        int[] nextIndex = findNextVerticalIndex(board, currentIndex, goingUp);
+        boolean indexCheck = nextIndex[0] >= 0 && nextIndex[0] < board.length &&
+                nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
+
+        if (indexCheck) {
+
+            if (board[nextIndex[0]][nextIndex[1]].isPieceNull()) {
+
+                possibleMovementSquares.add(board[nextIndex[0]][nextIndex[1]]);
+                board[nextIndex[0]][nextIndex[1]].addPieceThatCanMove(this);
+                pms.get(pmsType).add(board[nextIndex[0]][nextIndex[1]]);
+                addVerticalThreats(board, nextIndex, goingUp, pmsType);
+
+            } else if (board[nextIndex[0]][nextIndex[1]].getPiece().getPlayerColor() != playerColor) {
+
+                possibleMovementSquares.add(board[nextIndex[0]][nextIndex[1]]);
+                board[nextIndex[0]][nextIndex[1]].addPieceThatCanMove(this);
+                pms.get(pmsType).add(board[nextIndex[0]][nextIndex[1]]);
+                if (board[nextIndex[0]][nextIndex[1]].getPiece().getType() != Type.KING) {
+                    board[nextIndex[0]][nextIndex[1]].getPiece().setPinned(checkVerticalPin(board, currentIndex, goingUp));
+                }else{
+                    disallowVerticalKingMovement(board, currentIndex, goingUp);
+                }
+
+            } else {
+                board[nextIndex[0]][nextIndex[1]].getPiece().protect();
+            }
         }
-
-
-        boolean indexCheck = nextIndex[0] >= 0 && nextIndex[0] < board.length && nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
-
-        if (indexCheck && board[nextIndex[0]][nextIndex[1]].isPieceNull()) {
-
-            possibleMovementSquares.add(board[nextIndex[0]][nextIndex[1]]);
-            board[nextIndex[0]][nextIndex[1]].addThreat(this);
-            pms.get(pmsType).add(board[nextIndex[0]][nextIndex[1]]);
-            addHorizontalThreats(board, nextIndex, goingUp, pmsType);
-
-        } else if (indexCheck && board[nextIndex[0]][nextIndex[1]].getPiece().getPlayer() != this.player) {
-
-
-            possibleMovementSquares.add(board[nextIndex[0]][nextIndex[1]]);
-            board[nextIndex[0]][nextIndex[1]].addThreat(this);
-            pms.get(pmsType).add(board[nextIndex[0]][nextIndex[1]]);
-        } else if (indexCheck) {
-            board[nextIndex[0]][nextIndex[1]].addPossibleMovement(this);
-        }
-
     }
 
-    public void addVerticalThreats(Square[][] board, int[] currentIndex, boolean goingRight, int pmsType) {
-        int[] nextIndex;
+    private boolean checkVerticalPin(Square[][] board, int[] currentIndex, boolean goingUp) {
+        int[] nextIndex = findNextVerticalIndex(board, currentIndex, goingUp);
+        boolean indexCheck = nextIndex[0] >= 0 && nextIndex[0] < board.length &&
+                nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
+
+        if (indexCheck) {
+
+            if (board[nextIndex[0]][nextIndex[1]].isPieceNull()) {
+                return checkVerticalPin(board, nextIndex, goingUp);
+
+            } else if (board[nextIndex[0]][nextIndex[1]].getPiece().getPlayerColor() != playerColor) {
+                if (board[nextIndex[0]][nextIndex[1]].getPiece().getType() == Type.KING) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void disallowVerticalKingMovement(Square[][] board, int[] currentIndex, boolean goingUp){
+
+        int[] nextIndex = findNextVerticalIndex(board, currentIndex, goingUp);
+        boolean indexCheck = nextIndex[0] >= 0 && nextIndex[0] < board.length &&
+                nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
+
+        if (indexCheck) {
+            if (board[nextIndex[0]][nextIndex[1]].isPieceNull()) {
+                board[nextIndex[0]][nextIndex[1]].disallowKingMovement(playerColor);
+                disallowVerticalKingMovement(board, currentIndex, goingUp);
+
+            }
+        }
+    }
+
+    private void addHorizontalThreats(Square[][] board, int[] currentIndex, boolean goingRight, int pmsType) {
+        int[] nextIndex = findNextHorizontalIndex(board, currentIndex, goingRight);
+        boolean indexCheck = nextIndex[0] >= 0 && nextIndex[0] < board.length &&
+                nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
+
+        if (indexCheck) {
+
+            if (board[nextIndex[0]][nextIndex[1]].isPieceNull()) {
+
+                possibleMovementSquares.add(board[nextIndex[0]][nextIndex[1]]);
+                board[nextIndex[0]][nextIndex[1]].addPieceThatCanMove(this);
+                pms.get(pmsType).add(board[nextIndex[0]][nextIndex[1]]);
+                addHorizontalThreats(board, nextIndex,  goingRight, pmsType);
+
+            } else if (board[nextIndex[0]][nextIndex[1]].getPiece().getPlayerColor() != playerColor) {
+
+                possibleMovementSquares.add(board[nextIndex[0]][nextIndex[1]]);
+                board[nextIndex[0]][nextIndex[1]].addPieceThatCanMove(this);
+                pms.get(pmsType).add(board[nextIndex[0]][nextIndex[1]]);
+                if (board[nextIndex[0]][nextIndex[1]].getPiece().getType() != Type.KING) {
+                    board[nextIndex[0]][nextIndex[1]].getPiece().setPinned(checkHorizontalPin(board, currentIndex, goingRight));
+                }else{
+                    disallowHorizontalKingMovement(board, currentIndex, goingRight);
+                }
+
+            } else {
+                board[nextIndex[0]][nextIndex[1]].getPiece().protect();
+            }
+        }
+    }
+
+    private boolean checkHorizontalPin(Square[][] board, int[] currentIndex, boolean goingRight) {
+        int[] nextIndex = findNextHorizontalIndex(board, currentIndex, goingRight);
+        boolean indexCheck = nextIndex[0] >= 0 && nextIndex[0] < board.length &&
+                nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
+
+        if (indexCheck) {
+
+            if (board[nextIndex[0]][nextIndex[1]].isPieceNull()) {
+                return checkHorizontalPin(board, nextIndex, goingRight);
+
+            } else if (board[nextIndex[0]][nextIndex[1]].getPiece().getPlayerColor() != playerColor) {
+                if (board[nextIndex[0]][nextIndex[1]].getPiece().getType() == Type.KING) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void disallowHorizontalKingMovement(Square[][] board, int[] currentIndex, boolean goingRight){
+
+        int[] nextIndex = findNextHorizontalIndex(board, currentIndex, goingRight);
+        boolean indexCheck = nextIndex[0] >= 0 && nextIndex[0] < board.length &&
+                nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
+
+        if (indexCheck) {
+            if (board[nextIndex[0]][nextIndex[1]].isPieceNull()) {
+                board[nextIndex[0]][nextIndex[1]].disallowKingMovement(playerColor);
+                disallowHorizontalKingMovement(board, currentIndex, goingRight);
+
+            }
+        }
+    }
+    private static int[] findNextHorizontalIndex(Square[][] board, int[] currentIndex, boolean goingRight){
         if (goingRight) {
-            nextIndex = new int[]{currentIndex[0], currentIndex[1] + 1};
+            return new int[]{currentIndex[0], currentIndex[1] + 1};
         } else {
-            nextIndex = new int[]{currentIndex[0], currentIndex[1] - 1};
+            return new int[]{currentIndex[0], currentIndex[1] - 1};
         }
-
-
-        boolean indexCheck = nextIndex[0] >= 0 && nextIndex[0] < board.length && nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
-
-        if (indexCheck && board[nextIndex[0]][nextIndex[1]].isPieceNull()) {
-
-            possibleMovementSquares.add(board[nextIndex[0]][nextIndex[1]]);
-            board[nextIndex[0]][nextIndex[1]].addThreat(this);
-            pms.get(pmsType).add(board[nextIndex[0]][nextIndex[1]]);
-
-        } else if (indexCheck && board[nextIndex[0]][nextIndex[1]].getPiece().getPlayer() != this.player) {
-
-            possibleMovementSquares.add(board[nextIndex[0]][nextIndex[1]]);
-            board[nextIndex[0]][nextIndex[1]].addThreat(this);
-            pms.get(pmsType).add(board[nextIndex[0]][nextIndex[1]]);
-
-        } else if (indexCheck) {
-            board[nextIndex[0]][nextIndex[1]].addPossibleMovement(this);
+    }
+    private static int[] findNextVerticalIndex(Square[][] board, int[] currentIndex, boolean goingUp){
+        if (goingUp) {
+            return new int[]{currentIndex[0] - 1, currentIndex[1]};
+        } else {
+            return new int[]{currentIndex[0] + 1, currentIndex[1]};
         }
     }
 }

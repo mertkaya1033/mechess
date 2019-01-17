@@ -16,11 +16,15 @@ public class Knight extends Piece {
     public void occupy(Board board) {
         possibleMovementSquares = new ArrayList<>();
         addThreats(board.getBoard(), new int[]{1, -1, 2, -2});
+        if(isPinned){
+            setPinned(true);
+        }
     }
 
     public void addThreats(Square[][] board, int[] range) {
         boolean indexCheck;
         boolean possibleThreat;
+        int[]index = currentSquare.getIndex();
         for (int i : range) {
             for (int j : range) {
                 if (Math.abs(i) != Math.abs(j)) {
@@ -29,13 +33,13 @@ public class Knight extends Piece {
                             index[1] + j >= 0 && index[1] + j < board[index[0]].length;
                     if(indexCheck){
                         possibleThreat = !board[index[0] + i][index[1] + j].isPieceNull() &&
-                                board[index[0] + i][index[1] + j].getPiece().getPlayer() != this.player;
+                                board[index[0] + i][index[1] + j].getPiece().getPlayerColor() != playerColor;
 
                         if (board[index[0] + i][index[1] + j].isPieceNull() || possibleThreat) {
                             possibleMovementSquares.add(board[index[0] + i][index[1] + j]);
-                            board[index[0] + i][index[1] + j].addThreat(this);
+                            board[index[0] + i][index[1] + j].addPieceThatCanMove(this);
                         } else {
-                            board[index[0] + i][index[1] + j].addPossibleMovement(this);
+                            board[index[0] + i][index[1] + j].getPiece().protect();
                         }
                     }
                 }

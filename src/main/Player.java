@@ -3,25 +3,25 @@ package main;
 import pieces.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Player {
-    private Piece.CPlayer color;
+    private Piece.Side color;
     private ArrayList<Piece> pieces;
     private King king;
     private Board board;
+    private boolean doesHaveMove;
 
     /**
      * @param color
      * @param board
      */
-    public Player(Piece.CPlayer color, Board board) {
+    public Player(Piece.Side color, Board board) {
         this.board = board;
         this.pieces = new ArrayList<>();
         this.color = color;
 
         int num, pawn;
-        if (this.color == Piece.CPlayer.white) {
+        if (this.color == Piece.Side.white) {
             num = 1;
             pawn = 2;
 
@@ -52,14 +52,12 @@ public class Player {
         for (Piece piece : this.pieces) {
             piece.occupy(board);
         }
-        king.occupy(board);
-
     }
 
     /**
      * @return
      */
-    public Piece.CPlayer getColor() {
+    public Piece.Side getColor() {
         return color;
     }
 
@@ -69,7 +67,7 @@ public class Player {
      */
     public void move(Piece piece, Square square) {
         if (this.pieces.contains(piece)) {
-            if(!square.isPieceNull()){
+            if (!square.isPieceNull()) {
                 square.getPiece().getPlayer().pieces.remove(square.getPiece());
             }
             piece.move(square);
@@ -83,110 +81,58 @@ public class Player {
         for (Piece piece : this.pieces) {
             piece.occupy(board);
         }
-        /**ADD CHECKMATE**/
     }
 
-    /**
-     *
-     */
-    public void occupyKing() {
-        this.king.occupy(board);
+    public void checkKingMovements() {
+        this.king.checkMovements();
     }
 
-    public void checkKingThreats() {
-        for (int i = 0; i < king.getPossibleMovementSquares().size(); i++) {
-            Square pMovement = king.getPossibleMovementSquares().get(i);
-            if (!pMovement.isUnderThreat(this).isEmpty() || !pMovement.isPossibleMovement(this)) {
-                king.getPossibleMovementSquares().remove(pMovement);
-
-                if (pMovement.getThreats().contains(king))
-                    pMovement.getThreats().remove(king);
-
-            }
+    public void reset() {
+        for (Piece piece : pieces) {
+            piece.reset();
         }
     }
 
     public boolean isKingUnderThreat() {
-        if (this.king.getCurrentSquare().isUnderThreat(this).isEmpty()) {
-            return false;
-        }
-        return true;
+        return !king.currentSquare.isCanKingMove(color);
     }
 
-    public ArrayList<Piece> threatsToKing() {
-        return this.king.getCurrentSquare().isUnderThreat(this);
-    }
+    public ArrayList<Constants.Rescuer> getPossibleEscapes() {
+        Piece.Side otherColor = (color == Piece.Side.white) ? Piece.Side.black: Piece.Side.white;
+        ArrayList<Constants.Rescuer> possibleEscapes = new ArrayList<>();
+        ArrayList<Piece> threats = king.currentSquare.getPiecesThatCanMove(otherColor);
 
-
-    private HashMap<Piece, Square> rescuers = new HashMap<>();
-//    private ArrayList<Piece> piecesRescueKing = new ArrayList<>();
-
-    public String isCheckMate() {
-        rescuers = new HashMap<>();
-        ArrayList<Piece> threatsToKing = threatsToKing();
-
-        if (threatsToKing.size() > 1 && this.king.getPossibleMovementSquares().isEmpty()) {
-            return "mate";
-        } else if (threatsToKing.size() > 1) {
-            return "king has to move";
-        }else {
-            Piece threat = threatsToKing.get(0);
-            if ((threat.type == Piece.Type.KNIGHT || threat.type == Piece.Type.PAWN) && threat.currentSquare.capturable(this).isEmpty()) {
-                return "mate";
-            } else {
-                /**
-                 * blocking the path of the threat
-                 */
-                for (int i = 0; i < threat.pathAsAThreat.size(); i++) {//change it to pathAsAThreat.size
-                    Square possibleBlock = threat.pathAsAThreat.get(i);
-                    if (!possibleBlock.capturable(this).isEmpty()) {
-                        for(Piece p: possibleBlock.capturable(this)){
-                            rescuers.put(p, possibleBlock);
-                        }
-                    }else{
-                        /**
-                         * this is needed because pawns' work differently
-                         */
-                        for(Piece p: pieces){
-                            if(p.type == Piece.Type.PAWN && !p.possibleMovementSquares.isEmpty() && p.possibleMovementSquares.contains(possibleBlock)){
-                                rescuers.put(p, possibleBlock);
-                            }
-                        }
+        if (threats.size() > 1 && !king.possibleMovementSquares.isEmpty()) {
+            for (Square square : king.possibleMovementSquares) {
+                possibleEscapes.add(new Constants.Rescuer(king, square));
+            }
+        } else if (threats.size() == 1 ) {
+            Piece threat = threats.get(0);
+            ArrayList<Square> path = threat.pathAsAThreat;
+            for (Square possibleBlock : path) {
+                for (Piece piece : possibleBlock.getPiecesThatCanMove(color)) {
+                    possibleEscapes.add(new Constants.Rescuer(piece, possibleBlock));
+                }
+                for (Piece piece : pieces) {
+                    if (piece.type == Piece.Type.PAWN && !piece.possibleMovementSquares.isEmpty()
+                            && piece.possibleMovementSquares.contains(possibleBlock)) {
+                        possibleEscapes.add(new Constants.Rescuer(piece, possibleBlock));
                     }
                 }
-                /**
-                 * Is the treat itself capturable
-                 */
-                if (!threat.currentSquare.capturable(this).isEmpty()) {
-                    for(Piece p: threat.currentSquare.capturable(this)){
-                        rescuers.put(p, threat.currentSquare);
-                    }
+            }
+            for (Piece piece : pieces) {
+                if (!piece.possibleMovementSquares.isEmpty() && piece.possibleMovementSquares.contains(threat.currentSquare)) {
+                    possibleEscapes.add(new Constants.Rescuer(piece, threat.currentSquare));
                 }
-
-                /**
-                 * if the king can move
-                 */
-
-
-                if (rescuers.isEmpty() && this.king.getPossibleMovementSquares().isEmpty()) {
-                    return "mate";
-                }else if(rescuers.isEmpty()){
-                    return "king has to move";
+            }
+            if(!king.possibleMovementSquares.isEmpty()){
+                for (Square square : king.possibleMovementSquares) {
+                    if(square.canKingMove(color))
+                        possibleEscapes.add(new Constants.Rescuer(king, square));
                 }
-                return "just check";
             }
         }
-    }
-    public void emptyOccupies(){
-        for(int i = 0; i < pieces.size(); i++){
-            pieces.get(i).emptyOccupies();
-        }
-    }
-
-    public void occupyKingRescuers(){
-        for (Piece piece : rescuers.keySet()) {
-            piece.possibleMovementSquares.add(rescuers.get(piece));
-        }
+        return possibleEscapes;
     }
 }
 

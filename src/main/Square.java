@@ -5,20 +5,25 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 
 public class Square {
-    private String position;
-    private int index[];
-    private ArrayList<Piece> threats = new ArrayList<>();
-    private ArrayList<Piece> possibleMovement = new ArrayList<>();
-    private Piece piece = null;
-    private Color color;
-    private Piece thePieceCanMove = null;
-    private boolean selected = false;
-    private boolean showThreats = false;
+    private String position;//address of the square
+    private ArrayList<Piece> whitePiecesThatCanMove = new ArrayList<>();//the white pieces that can move to this square
+    private ArrayList<Piece> blackPiecesThatCanMove = new ArrayList<>();//the black pieces that can move to this square
+    private boolean canWhiteKingMove = true, canBlackKingMove = true;//if a king from either color can move to this square
+    private Piece piece = null;//the piece that is on this square
+    private boolean selected = false;//if the square has been selected
+    private Piece thePieceCanMove = null;//if a square has been selected(and it is not this one), it is the piece that is on that square can move to this square
+    private Color color;//the color of the square
+    private int index[];//the index of the square on the 8x8 board
+    private boolean showTheThreatsForThePiece = false;//does the threats for the piece that is on this square are being displayed
 
     /**
-     * @param pos
-     * @param index
-     * @param isDark
+     * Square(String pos, int[] index, boolean isDark)
+     * <p>
+     * Description: the constructor
+     *
+     * @param pos    address of the square
+     * @param index  the index of the square on the 8x8 board
+     * @param isDark if the square has the dark color
      */
     public Square(String pos, int[] index, boolean isDark) {
         this.index = index;
@@ -30,31 +35,33 @@ public class Square {
     }
 
     /**
-     * @return
-     */
-    public String getPos() {
-        return this.position;
-    }
-
-    /**
-     * @param g
-     * @param x
-     * @param y
+     * display(Graphics g, int x, int y)
+     * <p>
+     * Description: displays the square on the graphics
+     *
+     * @param g the graphics where the square can be displayed
+     * @param x the x position of the square
+     * @param y the x position of the square
      */
     public void display(Graphics g, int x, int y) {
 
+        //display the square
         g.setColor(this.color);
         g.fillRect(x, y, Constants.SQUARE_SIZE, Constants.SQUARE_SIZE);
+
+        //if there is a piece on this square, display it
         if (piece != null) {
             piece.display(g, x, y);
         }
 
+        //if the square has been selected, display a green rectangle around it
         if (selected) {
             g.setColor(Color.GREEN);
             for (int i = 0; i < 3; i++)
                 g.drawRect(x + i, y + i, Constants.SQUARE_SIZE - (i * 2), Constants.SQUARE_SIZE - (i * 2));
         }
 
+        //if another piece can move to this square, display a green oval on the square
         if (thePieceCanMove != null) {
             int elX, elY, elSize;
             elSize = Constants.SQUARE_SIZE / 3;
@@ -65,126 +72,76 @@ public class Square {
             g.fillOval(elX, elY, elSize, elSize);
 
         }
-
-
     }
 
     /**
-     * @param piece
+     * setPiece(Piece piece)
+     * <p>
+     * Description: setter
+     *
+     * @param piece changes the piece on this square to this piece
      */
     public void setPiece(Piece piece) {
         this.piece = piece;
     }
 
     /**
-     * @return
+     * getPiece(void)
+     * <p>
+     * Description: getter
+     *
+     * @return the current piece on the square
      */
     public Piece getPiece() {
         return this.piece;
     }
 
     /**
-     * @return
+     * isPieceNull()
+     * <p>
+     * Description: Determines if there is a piece placed on this square
+     *
+     * @return if there is a piece on the square
      */
     public boolean isPieceNull() {
         return this.piece == null;
     }
 
     /**
-     * @return
+     * getIndex()
+     * <p>
+     * Description: getter
+     *
+     * @return the index of the square on the board
      */
     public int[] getIndex() {
         return this.index;
     }
 
     /**
-     * @param piece
-     */
-    public void addThreat(Piece piece) {
-        this.threats.add(piece);
-    }
-
-    /**
+     * setThePieceCanMove(Piece thePieceCanMove)
+     * <p>
+     * Description: setter
      *
+     * @param thePieceCanMove the piece that can move to this square
      */
-    public void emptyThreats() {
-        this.threats = new ArrayList<>();
+    public void setThePieceCanMove(Piece thePieceCanMove) {
+        this.thePieceCanMove = thePieceCanMove;
     }
 
+
     /**
+     * clicked(boolean showThreatsForPiece)
+     * <p>
+     * Description: It is called when the player has clicked on this square. It either selects or unselects the square.
      *
-     * @param player
-     * @return
-     */
-    public ArrayList<Piece> isUnderThreat(Player player) {
-        Piece.CPlayer colo = (player.getColor() == Piece.CPlayer.white) ? Piece.CPlayer.black : Piece.CPlayer.white;
-        ArrayList<Piece> ret = new ArrayList<>();
-        for (Piece piec : threats) {
-            if (piec.getColor() == colo) {
-                ret.add(piec);
-            }
-        }
-        return ret;
-    }
-
-    public ArrayList<Piece>getThreats(){
-        return threats;
-    }
-    /**
-     * WORK ON THIS PART
-     */
-    /*****************************************************************************************************************/
-
-    /**
-     * @param piece
-     */
-    public void addPossibleMovement(Piece piece) {
-        this.possibleMovement.add(piece);
-    }
-
-    /**
-     *
-     */
-    public void emptyPossibleMovement() {
-        this.possibleMovement = new ArrayList<>();
-    }
-
-    public boolean isPossibleMovement(Player player) {
-        Piece.CPlayer color = (player.getColor() == Piece.CPlayer.white) ? Piece.CPlayer.black : Piece.CPlayer.white;
-        for (Piece piece : possibleMovement) {
-            if (piece.getColor() == color) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public ArrayList<Piece>getPossibleMovement() {
-        return possibleMovement;
-    }
-    /*****************************************************************************************************************/
-
-    /**
-     * @param piece
-     */
-    public void setThePieceCanMove(Piece piece) {
-        this.thePieceCanMove = piece;
-    }
-
-    /**
-     * @return
-     */
-    public Piece getThePieceCanMove() {
-        return thePieceCanMove;
-    }
-
-    /**
-     * @param showThreatsForPiece
+     * @param showThreatsForPiece if the threats for the piece that is on the square will be shown
      */
     public void clicked(boolean showThreatsForPiece) {
         this.selected = !this.selected;
-        showThreats = showThreatsForPiece;
-        if (selected && piece != null && showThreats) {
+        this.showTheThreatsForThePiece = showThreatsForPiece;
+
+        if (selected && piece != null && showTheThreatsForThePiece) {
             ArrayList<Square> th = piece.getPossibleMovementSquares();
             for (int i = 0; i < th.size(); i++) {
                 th.get(i).setThePieceCanMove(piece);
@@ -197,14 +154,77 @@ public class Square {
         }
     }
 
-    public ArrayList<Piece> capturable(Player player){
-        ArrayList<Piece> p = new ArrayList<>();
-        Piece.CPlayer color = player.getColor();
-        for (Piece piec : threats) {
-            if (piec.getColor() == color) {
-                p.add(piec);
-            }
+    /**
+     * getPosition()
+     *
+     * Description: getter
+     *
+     * @return the address of the square on the board
+     */
+    public String getPosition(){
+        return this.position;
+    }
+
+    /**
+     * getPosition()
+     *
+     * Description: getter
+     *
+     * @return the piece that can move to this square
+     */
+    public Piece getThePieceCanMove() {
+        return thePieceCanMove;
+    }
+
+    public void addPieceThatCanMove(Piece piece){
+        if(piece.playerColor == Piece.Side.white){
+            whitePiecesThatCanMove.add(piece);
+            canBlackKingMove = false;
+        }else{
+            blackPiecesThatCanMove.add(piece);
+            canWhiteKingMove = false;
         }
-        return p;
+    }
+
+    public void disallowKingMovement(Piece.Side playerColor){
+        if(playerColor == Piece.Side.white){
+            canBlackKingMove = false;
+        }else{
+            canWhiteKingMove = false;
+        }
+    }
+
+    public boolean canKingMove(Piece.Side playerColor) {
+        if(playerColor == Piece.Side.white){
+            return canWhiteKingMove;
+        }else {
+            return canBlackKingMove;
+        }
+    }
+
+    public void reset(){
+        reset(true);
+    }
+    public void reset(boolean fully){
+        if(fully){
+            canBlackKingMove = true;
+            canWhiteKingMove = true;
+        }
+        whitePiecesThatCanMove = new ArrayList<>();
+        blackPiecesThatCanMove = new ArrayList<>();
+    }
+
+    public boolean isCanKingMove(Piece.Side playerColor){
+        if(playerColor == Piece.Side.white){
+            return canWhiteKingMove;
+        }
+        return canBlackKingMove;
+    }
+
+    public ArrayList<Piece>getPiecesThatCanMove(Piece.Side playerColor){
+        if(playerColor == Piece.Side.white){
+            return whitePiecesThatCanMove;
+        }
+        return blackPiecesThatCanMove;
     }
 }

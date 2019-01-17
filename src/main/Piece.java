@@ -7,32 +7,38 @@ import java.util.ArrayList;
 import javax.swing.ImageIcon;
 
 public abstract class Piece {
+    //represents types of pieces
     public enum Type {
         KING, QUEEN, ROOK, PAWN, BISHOP, KNIGHT
     }
 
-    public enum CPlayer {
+    //represents the side/color of the piece
+    public enum Side {
         white, black
     }
 
-    protected Type type;
-    protected ArrayList<Square> possibleMovementSquares, pathAsAThreat;
-    protected String position;
-    protected int index[];
-    protected Image image;
-    protected Square currentSquare = null;
-    protected Player player;
+
+    protected ArrayList<Square> possibleMovementSquares;//all the possible squares that this piece can legally move
+    protected ArrayList<Square> pathAsAThreat;//shows the path to the king of the opposite player
+    protected boolean isPinned = false;//if the piece can't move because if it does the king can be captured
+    protected Side playerColor;//the side/color of the piece
+    protected Player player;//the player which owns this piece
+    protected Square currentSquare = null;//the square that the piece is currently placed on
+    protected Image image;//the image of the square
+    protected Type type;//the type of the piece
+    protected String position;//the address of the piece on the board
+    protected ArrayList<ArrayList<Square>> pms;//used to determine different paths of the piece
 
     /**
-     * @param position
-     * @param player
-     * @param type
+     * @param position the address of the piece on the board
+     * @param player the player which owns the piece
+     * @param type the type of the piece
      */
     public Piece(String position, Player player, Type type) {
-        this.position = position;
         this.type = type;
         this.player = player;
-
+        this.position = position;
+        this.playerColor = player.getColor();
         String imageName = "src/images/" + player.getColor().toString() + "_" + type.toString() + ".png";
         this.image = new ImageIcon(imageName).getImage();
         this.image = this.image.getScaledInstance(Constants.SQUARE_SIZE, Constants.SQUARE_SIZE, 0);
@@ -47,34 +53,18 @@ public abstract class Piece {
     public void emptyOccupies(){
         possibleMovementSquares = new ArrayList<>();
     }
-    /**
-     * @param square
-     */
-    public void setCurrentSquare(Square square) {
-        this.currentSquare = square;
-        this.index = square.getIndex();
-    }
 
     /**
      * @param pos
      */
     public void move(Square pos) {
         if (possibleMovementSquares.contains(pos)) {
-            this.position = pos.getPos();
-            this.currentSquare.setPiece(null);
-            this.currentSquare = pos;
-            this.index = this.currentSquare.getIndex();
+            position = pos.getPosition();
+            currentSquare.setPiece(null);
+            currentSquare = pos;
             pos.setPiece(this);
         }
     }
-
-    /**
-     * @return
-     */
-    public String getPosition() {
-        return this.position;
-    }
-
     /**
      * @param g
      * @param x
@@ -84,39 +74,42 @@ public abstract class Piece {
         g.drawImage(this.image, x, y, null);
     }
 
-    /**
-     * @return
-     */
-    public ArrayList<Square> getPossibleMovementSquares() {
-        return this.possibleMovementSquares;
+    public void setCurrentSquare(Square currentSquare) {
+        this.currentSquare = currentSquare;
     }
 
-    /**
-     * @return
-     */
-    public Player getPlayer() {
-        return this.player;
+    public String getPosition() {
+        return position;
     }
 
-    /**
-     * @return
-     */
-    public CPlayer getColor() {
-        return this.player.getColor();
-    }
-
-    /**
-     * @return
-     */
-    public Square getCurrentSquare() {
-        return this.currentSquare;
-    }
-
-    public void setPossibleMovementSquares(ArrayList<Square> possibleMovementSquares) {
-        this.possibleMovementSquares = possibleMovementSquares;
+    public Side getPlayerColor() {
+        return playerColor;
     }
 
     public Type getType() {
-        return this.type;
+        return type;
+    }
+
+    public void setPinned(boolean pinned) {
+        isPinned = pinned;
+        possibleMovementSquares = new ArrayList<>();
+    }
+
+    public void protect(){
+        currentSquare.disallowKingMovement(playerColor);
+    }
+
+    public ArrayList<Square> getPossibleMovementSquares() {
+        return possibleMovementSquares;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void reset(){
+        possibleMovementSquares = new ArrayList<>();
+        pathAsAThreat = new ArrayList<>();
+        isPinned = false;
     }
 }

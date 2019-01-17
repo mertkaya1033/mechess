@@ -10,8 +10,6 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import pieces.Bishop;
-
 
 public class Display extends JPanel implements MouseListener,
         MouseMotionListener, ActionListener {

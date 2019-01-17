@@ -5,19 +5,18 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 public class Board {
-    private Square[][] board = new Square[8][8];
-    private Player whitePlayer;
-    private Player blackPlayer;
-    private Square selectedSquare = null;
-
-    private boolean whiteTurn = true;
-    private boolean isCheck = false;
-    private String isCheckMate;
-    private boolean whiteWin = false, blackWin = false, stalemate = false;
-    private int x, y;
+    private Square[][] board = new Square[8][8];//the 8x8 board
+    private Player whitePlayer;//the white player
+    private Player blackPlayer;//the black player
+    private Square selectedSquare = null;//currently selected square
+    private String result = "on going";//the result of the game
+    private boolean whiteTurn = true;//if it is white's turn to play
+    private int x, y;//the x and y positions of the board
 
     /**
-     *
+     * Board()
+     * <p>
+     * Description: constructor
      */
     public Board() {
 
@@ -27,17 +26,21 @@ public class Board {
         for (int i = board.length - 1; i >= 0; i--) {
             for (int j = board[i].length - 1; j >= 0; j--) {
                 boolean isDark = j % 2 != i % 2;
-                String pos = (char) (j + 97) + "" + (board.length - i);
+                String pos = (char) (j + 97) + "" + (board.length - i);//ascii
                 board[i][j] = new Square(pos, new int[]{i, j}, isDark);
             }
         }
 
-        whitePlayer = new Player(Piece.CPlayer.white, this);
-        blackPlayer = new Player(Piece.CPlayer.black, this);
+        whitePlayer = new Player(Piece.Side.white, this);
+        blackPlayer = new Player(Piece.Side.black, this);
 
+        whitePlayer.checkKingMovements();
+        blackPlayer.checkKingMovements();
+
+        //prints the board with the address of each square
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
-                System.out.print(board[i][j].getPos() + "\t");
+                System.out.print(board[i][j].getPosition() + "\t");
             }
             System.out.println();
         }
@@ -45,12 +48,13 @@ public class Board {
     }
 
     /**
-     * @param g
+     * display(Graphics g)
+     * <p>
+     * Description: displays the whole board onto the graphics
+     *
+     * @param g the graphics where everything is going to be displayed
      */
     public void display(Graphics g) {
-        if (blackWin || stalemate || whiteWin) {
-            System.out.println("CHECKMATE");
-        }
 
         if (whiteTurn) {
             for (int row = 0; row < board.length; row++) {
@@ -69,13 +73,6 @@ public class Board {
     }
 
     /**
-     * @return
-     */
-    public Square[][] getBoard() {
-        return this.board;
-    }
-
-    /**
      * @param pos
      * @return
      */
@@ -87,29 +84,37 @@ public class Board {
      * @param event
      */
     public void clicked(MouseEvent event) {
-        Square clickedSquare = this.getClickedSquare(event);
+        if (result.equals("on going")) {
+            Square clickedSquare = this.getClickedSquare(event);
+            if (clickedSquare != null) {//if player has clicked a square
+                //if there isn't a square that has been selected by the player
+                if (clickedSquare.getThePieceCanMove() == null && selectedSquare == null) {
 
-        if (clickedSquare != null && clickedSquare.getThePieceCanMove() == null && selectedSquare == null) {
+                    selectedSquare = clickedSquare;//select the square
+                    Piece clickedPiece = selectedSquare.getPiece();
+                    if (clickedPiece != null) {
+                        selectedSquare.clicked(whiteTurn == (clickedPiece.getPlayerColor() == Piece.Side.white));
+                    } else {
+                        selectedSquare.clicked(false);
+                    }
 
-            selectedSquare = clickedSquare;
-            Piece clickedPiece = selectedSquare.getPiece();
-            if (clickedPiece != null) {
-                selectedSquare.clicked(whiteTurn == (clickedPiece.getColor() == Piece.CPlayer.white));
-            } else {
-                selectedSquare.clicked(false);
+                }
+                //if the player clicked on the selected square
+                else if (selectedSquare == clickedSquare) {
+
+                    selectedSquare.clicked(false);
+                    selectedSquare = null;
+
+                }
+                //if the piece on the selected square can move to the clicked square
+                else if (clickedSquare.getThePieceCanMove() != null && selectedSquare != null) {
+
+                    Piece piece = selectedSquare.getPiece();
+                    selectedSquare.clicked(false);
+                    selectedSquare = null;
+                    move(piece, clickedSquare);
+                }
             }
-
-        } else if (clickedSquare != null && selectedSquare == clickedSquare) {
-
-            selectedSquare.clicked(false);
-            selectedSquare = null;
-
-        } else if (clickedSquare != null && clickedSquare.getThePieceCanMove() != null && selectedSquare != null) {
-
-            Piece piece = selectedSquare.getPiece();
-            selectedSquare.clicked(false);
-            selectedSquare = null;
-            move(piece, clickedSquare);
         }
     }
 
@@ -134,6 +139,7 @@ public class Board {
     }
 
     private void move(Piece piece, Square clickedSquare) {
+        boolean isCheck;
         if (whiteTurn) {
             whitePlayer.move(piece, clickedSquare);
         } else {
@@ -146,78 +152,63 @@ public class Board {
         if (whiteTurn) {
             whitePlayer.occupy();
             blackPlayer.occupy();
-            whitePlayer.occupyKing();
-            blackPlayer.occupyKing();
-            whitePlayer.checkKingThreats();
-            blackPlayer.checkKingThreats();
+            ;
+            whitePlayer.checkKingMovements();
+            blackPlayer.checkKingMovements();
 
             isCheck = whitePlayer.isKingUnderThreat();
             if (isCheck) {
-                isCheckMate = whitePlayer.isCheckMate();
-                System.out.println(isCheckMate);
-                if (isCheckMate.equals("king has to move")) {
-                    moveSetup();
-                    whitePlayer.emptyOccupies();
-
-                    blackPlayer.occupy();
-                    blackPlayer.occupyKing();
-                    whitePlayer.occupyKing();
-                    blackPlayer.checkKingThreats();
-                    whitePlayer.checkKingThreats();
-
-                } else if (isCheckMate.equals("just check")) {
-                    moveSetup();
-                    whitePlayer.emptyOccupies();
-                    whitePlayer.occupyKingRescuers();
+                ArrayList<Constants.Rescuer> rescues = whitePlayer.getPossibleEscapes();
+                moveSetup(false);
+                if (!rescues.isEmpty()) {
+                    for (Constants.Rescuer rescuer : rescues) {
+                        rescuer.getPiece().possibleMovementSquares.add(rescuer.getSquare());
+                    }
                 } else {
-                    blackWin = true;
+                    result = "black wins";
                 }
-
             } else {
-
+                //STALEMATE
             }
         } else {
             whitePlayer.occupy();
             blackPlayer.occupy();
-            whitePlayer.occupyKing();
-            blackPlayer.occupyKing();
-            whitePlayer.checkKingThreats();
-            blackPlayer.checkKingThreats();
+            ;
+            whitePlayer.checkKingMovements();
+            blackPlayer.checkKingMovements();
 
             isCheck = blackPlayer.isKingUnderThreat();
-
             if (isCheck) {
-
-                isCheckMate = blackPlayer.isCheckMate();
-                System.out.println(isCheckMate);
-                if (isCheckMate.equals("king has to move")) {
-                    moveSetup();
-                    blackPlayer.emptyOccupies();
-
-                    whitePlayer.occupy();
-                    whitePlayer.occupyKing();
-                    blackPlayer.occupyKing();
-                    whitePlayer.checkKingThreats();
-                    blackPlayer.checkKingThreats();
-
-                } else if (isCheckMate.equals("just check")) {
-                    System.out.println(isCheckMate);
-                    moveSetup();
-                    blackPlayer.emptyOccupies();
-                    blackPlayer.occupyKingRescuers();
+                ArrayList<Constants.Rescuer> rescues = blackPlayer.getPossibleEscapes();
+                moveSetup(false);
+                if (!rescues.isEmpty()) {
+                    for (Constants.Rescuer rescuer : rescues) {
+                        rescuer.getPiece().possibleMovementSquares.add(rescuer.getSquare());
+                    }
                 } else {
-                    whiteWin = true;
+                    result = "white wins";
                 }
+            } else {
+                //STALEMATE
             }
         }
     }
 
     public void moveSetup() {
+        moveSetup(true);
+    }
+
+    public void moveSetup(boolean fullyReset) {
         for (int row = 0; row < board.length; row++) {
             for (int col = 0; col < board[row].length; col++) {
-                board[row][col].emptyThreats();
-                board[row][col].emptyPossibleMovement();
+                board[row][col].reset(fullyReset);
             }
         }
+        whitePlayer.reset();
+        blackPlayer.reset();
+    }
+
+    public Square[][] getBoard() {
+        return board;
     }
 }

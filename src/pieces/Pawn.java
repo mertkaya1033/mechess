@@ -22,12 +22,12 @@ public class Pawn extends Piece {
     @Override
     public void occupy(Board b) {
         boolean indexCheck;
-        boolean isSameColor;
-        boolean isCheck = false;
+
+        int[] index = currentSquare.getIndex();
         possibleMovementSquares = new ArrayList<>();
         Square[][] board = b.getBoard();
 
-        if (this.getColor() == CPlayer.white) {
+        if (playerColor == Side.white) {
             //movement
             //one move ahead check
             indexCheck = index[0] - 1 >= 0;
@@ -42,40 +42,29 @@ public class Pawn extends Piece {
 
             //capture
             indexCheck = index[0] - 1 >= 0 && index[1] - 1 >= 0;
-            if (indexCheck && !board[index[0] - 1][index[1] - 1].isPieceNull()) {
-                isSameColor = board[index[0] - 1][index[1] - 1].getPiece().getColor() == this.player.getColor();
-            } else {
-                isSameColor = true;
-            }
 
-            if (!isSameColor) {
-                if (!isCheck && !board[index[0] - 1][index[1] - 1].isPieceNull() && board[index[0] - 1][index[1] - 1].getPiece().getType() == Type.KING) {
-                    possibleMovementSquares = new ArrayList<>();
-                    isCheck = true;
+            if (indexCheck) {
+                if (board[index[0] - 1][index[1] - 1].isPieceNull()) {
+                    board[index[0] - 1][index[1] - 1].disallowKingMovement(playerColor);
+                } else if (board[index[0] - 1][index[1] - 1].getPiece().getPlayerColor() == playerColor) {
+                    board[index[0] - 1][index[1] - 1].getPiece().protect();
+                } else{
+                    possibleMovementSquares.add(board[index[0] - 1][index[1] - 1]);
+                    board[index[0] - 1][index[1] - 1].addPieceThatCanMove(this);
                 }
-                possibleMovementSquares.add(board[index[0] - 1][index[1] - 1]);
-                board[index[0] - 1][index[1] - 1].addThreat(this);
-            } else if (indexCheck) {
-                board[index[0] - 1][index[1] - 1].addPossibleMovement(this);
             }
 
             //capture
             indexCheck = index[0] - 1 >= 0 && index[1] + 1 <= board.length - 1;
-            if (indexCheck && !board[index[0] - 1][index[1] + 1].isPieceNull()) {
-                isSameColor = board[index[0] - 1][index[1] + 1].getPiece().getColor() == this.player.getColor();
-            } else {
-                isSameColor = true;
-            }
-            if (!isSameColor) {
-                if (!isCheck && !board[index[0] - 1][index[1] + 1].isPieceNull() && board[index[0] - 1][index[1] + 1].getPiece().getType() == Type.KING) {
-                    possibleMovementSquares = new ArrayList<>();
-                    isCheck = true;
+            if (indexCheck) {
+                if (board[index[0] - 1][index[1] + 1].isPieceNull()) {
+                    board[index[0] - 1][index[1] + 1].disallowKingMovement(playerColor);
+                } else if (board[index[0] - 1][index[1] + 1].getPiece().getPlayerColor() == playerColor) {
+                    board[index[0] - 1][index[1] + 1].getPiece().protect();
+                } else{
+                    possibleMovementSquares.add(board[index[0] - 1][index[1] + 1]);
+                    board[index[0] - 1][index[1] + 1].addPieceThatCanMove(this);
                 }
-                possibleMovementSquares.add(board[index[0] - 1][index[1] + 1]);
-                board[index[0] - 1][index[1] + 1].addThreat(this);
-            } else if (indexCheck) {
-//                board[index[0] - 1][index[1] + 1].addThreat(this);
-                board[index[0] - 1][index[1] + 1].addPossibleMovement(this);
             }
 
         } else {
@@ -94,42 +83,34 @@ public class Pawn extends Piece {
 
             //capture
             indexCheck = index[0] + 1 <= board.length - 1 && index[1] - 1 >= 0;
-            if (indexCheck && !board[index[0] + 1][index[1] - 1].isPieceNull()) {
-                isSameColor = board[index[0] + 1][index[1] - 1].getPiece().getColor() == this.player.getColor();
-            } else {
-                isSameColor = true;
-            }
-            if (!isSameColor) {
-                if (!isCheck && !board[index[0] + 1][index[1] - 1].isPieceNull() && board[index[0] + 1][index[1] - 1].getPiece().getType() == Type.KING) {
-                    possibleMovementSquares = new ArrayList<>();
-                    isCheck = true;
+            if (indexCheck) {
+                if (board[index[0] + 1][index[1] - 1].isPieceNull()) {
+                    board[index[0] + 1][index[1] - 1].disallowKingMovement(playerColor);
+                } else if (board[index[0] + 1][index[1] - 1].getPiece().getPlayerColor() == playerColor) {
+                    board[index[0] + 1][index[1] - 1].getPiece().protect();
+                } else{
+                    possibleMovementSquares.add(board[index[0] + 1][index[1] - 1]);
+                    board[index[0] + 1][index[1] - 1].addPieceThatCanMove(this);
                 }
-                possibleMovementSquares.add(board[index[0] + 1][index[1] - 1]);
-                board[index[0] + 1][index[1] - 1].addThreat(this);
-            } else if (indexCheck) {
-//                board[index[0] + 1][index[1] - 1].addThreat(this);
-                board[index[0] + 1][index[1] - 1].addPossibleMovement(this);
             }
-
+            
             //capture
             indexCheck = index[0] + 1 <= board.length - 1 && index[1] + 1 <= board.length - 1;
-            if (indexCheck && !board[index[0] + 1][index[1] + 1].isPieceNull()) {
-                isSameColor = board[index[0] + 1][index[1] + 1].getPiece().getColor() == this.player.getColor();
-            } else {
-                isSameColor = true;
-            }
-            if (!isSameColor) {
-                if (!isCheck && !board[index[0] + 1][index[1] + 1].isPieceNull() && board[index[0] + 1][index[1] + 1].getPiece().getType() == Type.KING) {
-                    possibleMovementSquares = new ArrayList<>();
-                    isCheck = true;
-                }
-                possibleMovementSquares.add(board[index[0] + 1][index[1] + 1]);
-                board[index[0] + 1][index[1] + 1].addThreat(this);
-            } else if (indexCheck) {
-//                board[index[0] + 1][index[1] + 1].addThreat(this);
-                board[index[0] + 1][index[1] + 1].addPossibleMovement(this);
-            }
 
+            if (indexCheck) {
+                if (board[index[0] + 1][index[1] + 1].isPieceNull()) {
+                    board[index[0] + 1][index[1] + 1].disallowKingMovement(playerColor);
+                } else if (board[index[0] + 1][index[1] + 1].getPiece().getPlayerColor() == playerColor) {
+                    board[index[0] + 1][index[1] + 1].getPiece().protect();
+                } else{
+                    possibleMovementSquares.add(board[index[0] + 1][index[1] + 1]);
+                    board[index[0] + 1][index[1] + 1].addPieceThatCanMove(this);
+                }
+            }
+        }
+
+        if(isPinned){
+            setPinned(true);
         }
     }
 

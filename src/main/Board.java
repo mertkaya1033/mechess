@@ -24,6 +24,13 @@ public class Board {
         this.y = 10;
 
         reset();
+
+        for (Square[] row : board) {
+            for (Square current : row) {
+                System.out.print(current.getPosition() + "  ");
+            }
+            System.out.println();
+        }
     }
 
     /**
@@ -67,7 +74,12 @@ public class Board {
             Square clickedSquare = this.getClickedSquare(event);
             if (clickedSquare != null) {//if player has clicked a square
                 //if there isn't a square that has been selected by the player
-                if (clickedSquare.getThePieceCanMove() == null && selectedSquare == null) {
+                if (clickedSquare.getThePieceCanMove() == null && selectedSquare != clickedSquare) {
+
+                    if (selectedSquare != null ) {
+                        selectedSquare.clicked(false);
+                        selectedSquare = null;
+                    }
 
                     selectedSquare = clickedSquare;//select the square
                     Piece clickedPiece = selectedSquare.getPiece();
@@ -131,7 +143,6 @@ public class Board {
         if (whiteTurn) {
             whitePlayer.occupy();
             blackPlayer.occupy();
-            ;
             whitePlayer.checkKingMovements();
             blackPlayer.checkKingMovements();
 
@@ -142,17 +153,17 @@ public class Board {
                 if (!rescues.isEmpty()) {
                     for (Constants.Rescuer rescuer : rescues) {
                         rescuer.getPiece().possibleMovementSquares.add(rescuer.getSquare());
+                        rescuer.getSquare().addPieceThatCanMove(rescuer.getPiece());
                     }
                 } else {
                     result = "black wins";
                 }
-            } else {
-                //STALEMATE
+            } else if(!whitePlayer.hasMove()){
+                result = "stalemate";
             }
         } else {
             whitePlayer.occupy();
             blackPlayer.occupy();
-            ;
             whitePlayer.checkKingMovements();
             blackPlayer.checkKingMovements();
 
@@ -163,13 +174,15 @@ public class Board {
                 if (!rescues.isEmpty()) {
                     for (Constants.Rescuer rescuer : rescues) {
                         rescuer.getPiece().possibleMovementSquares.add(rescuer.getSquare());
+                        rescuer.getSquare().addPieceThatCanMove(rescuer.getPiece());
                     }
                 } else {
                     result = "white wins";
                 }
-            } else {
-                //STALEMATE
+            } else if(!blackPlayer.hasMove()){
+                result = "stalemate";
             }
+            System.out.print("");
         }
     }
 
@@ -190,7 +203,8 @@ public class Board {
     public Square[][] getBoard() {
         return board;
     }
-    public void reset(){
+
+    public void reset() {
         for (int i = board.length - 1; i >= 0; i--) {
             for (int j = board[i].length - 1; j >= 0; j--) {
                 boolean isDark = j % 2 != i % 2;

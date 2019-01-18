@@ -80,6 +80,9 @@ public class Player {
     public void occupy() {
         for (Piece piece : this.pieces) {
             piece.occupy(board);
+            if(!piece.possibleMovementSquares.isEmpty()){
+                doesHaveMove = true;
+            }
         }
     }
 
@@ -98,6 +101,7 @@ public class Player {
     }
 
     public ArrayList<Constants.Rescuer> getPossibleEscapes() {
+        king.checkMovements();
         Piece.Side otherColor = (color == Piece.Side.white) ? Piece.Side.black: Piece.Side.white;
         ArrayList<Constants.Rescuer> possibleEscapes = new ArrayList<>();
         ArrayList<Piece> threats = king.currentSquare.getPiecesThatCanMove(otherColor);
@@ -133,6 +137,10 @@ public class Player {
             }
         }
         return possibleEscapes;
+    }
+
+    public boolean hasMove(){
+        return doesHaveMove;
     }
 }
 

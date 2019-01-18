@@ -38,7 +38,7 @@ public class Bishop extends Piece {
     }
 
     private void addDiagonalThreats(Square[][] board, int[] currentIndex, boolean goingUp, boolean goingRight, int pmsType) {
-        int[] nextIndex = findNextDiagonalIndex(board, currentIndex, goingUp, goingRight);
+        int[] nextIndex = findNextDiagonalIndex(currentIndex, goingUp, goingRight);
         boolean indexCheck = nextIndex[0] >= 0 && nextIndex[0] < board.length &&
                 nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
 
@@ -57,8 +57,8 @@ public class Bishop extends Piece {
                 board[nextIndex[0]][nextIndex[1]].addPieceThatCanMove(this);
                 pms.get(pmsType).add(board[nextIndex[0]][nextIndex[1]]);
                 if (board[nextIndex[0]][nextIndex[1]].getPiece().getType() != Type.KING) {
-                    board[nextIndex[0]][nextIndex[1]].getPiece().setPinned(checkDiagonalPin(board, currentIndex, goingUp, goingRight));
-                }else{
+                    board[nextIndex[0]][nextIndex[1]].getPiece().setPinned(checkDiagonalPin(board, nextIndex, goingUp, goingRight));
+                } else {
                     disallowDiagonalKingMovement(board, currentIndex, goingUp, goingRight);
                 }
 
@@ -69,7 +69,7 @@ public class Bishop extends Piece {
     }
 
     private boolean checkDiagonalPin(Square[][] board, int[] currentIndex, boolean goingUp, boolean goingRight) {
-        int[] nextIndex = findNextDiagonalIndex(board, currentIndex, goingUp, goingRight);
+        int[] nextIndex = findNextDiagonalIndex(currentIndex, goingUp, goingRight);
         boolean indexCheck = nextIndex[0] >= 0 && nextIndex[0] < board.length &&
                 nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
 
@@ -87,22 +87,22 @@ public class Bishop extends Piece {
         return false;
     }
 
-    private void disallowDiagonalKingMovement(Square[][] board, int[] currentIndex, boolean goingUp, boolean goingRight){
+    private void disallowDiagonalKingMovement(Square[][] board, int[] currentIndex, boolean goingUp, boolean goingRight) {
 
-        int[] nextIndex = findNextDiagonalIndex(board, currentIndex, goingUp, goingRight);
+        int[] nextIndex = findNextDiagonalIndex(currentIndex, goingUp, goingRight);
         boolean indexCheck = nextIndex[0] >= 0 && nextIndex[0] < board.length &&
                 nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
 
         if (indexCheck) {
             if (board[nextIndex[0]][nextIndex[1]].isPieceNull()) {
                 board[nextIndex[0]][nextIndex[1]].disallowKingMovement(playerColor);
-                disallowDiagonalKingMovement(board, currentIndex, goingUp, goingRight);
+                disallowDiagonalKingMovement(board, nextIndex, goingUp, goingRight);
 
             }
         }
     }
 
-    private static int[] findNextDiagonalIndex(Square[][] board, int[] currentIndex, boolean goingUp, boolean goingRight){
+    private static int[] findNextDiagonalIndex(int[] currentIndex, boolean goingUp, boolean goingRight){
         if (goingRight && goingUp) {
            return new int[]{currentIndex[0] - 1, currentIndex[1] + 1};//top right direction
         } else if (goingRight) {

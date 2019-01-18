@@ -39,7 +39,7 @@ public class Rook extends Piece {
     }
 
     private void addVerticalThreats(Square[][] board, int[] currentIndex, boolean goingUp, int pmsType) {
-        int[] nextIndex = findNextVerticalIndex(board, currentIndex, goingUp);
+        int[] nextIndex = findNextVerticalIndex(currentIndex, goingUp);
         boolean indexCheck = nextIndex[0] >= 0 && nextIndex[0] < board.length &&
                 nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
 
@@ -58,8 +58,8 @@ public class Rook extends Piece {
                 board[nextIndex[0]][nextIndex[1]].addPieceThatCanMove(this);
                 pms.get(pmsType).add(board[nextIndex[0]][nextIndex[1]]);
                 if (board[nextIndex[0]][nextIndex[1]].getPiece().getType() != Type.KING) {
-                    board[nextIndex[0]][nextIndex[1]].getPiece().setPinned(checkVerticalPin(board, currentIndex, goingUp));
-                }else{
+                    board[nextIndex[0]][nextIndex[1]].getPiece().setPinned(checkVerticalPin(board, nextIndex, goingUp));
+                } else {
                     disallowVerticalKingMovement(board, currentIndex, goingUp);
                 }
 
@@ -70,7 +70,7 @@ public class Rook extends Piece {
     }
 
     private boolean checkVerticalPin(Square[][] board, int[] currentIndex, boolean goingUp) {
-        int[] nextIndex = findNextVerticalIndex(board, currentIndex, goingUp);
+        int[] nextIndex = findNextVerticalIndex(currentIndex, goingUp);
         boolean indexCheck = nextIndex[0] >= 0 && nextIndex[0] < board.length &&
                 nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
 
@@ -88,23 +88,23 @@ public class Rook extends Piece {
         return false;
     }
 
-    private void disallowVerticalKingMovement(Square[][] board, int[] currentIndex, boolean goingUp){
+    private void disallowVerticalKingMovement(Square[][] board, int[] currentIndex, boolean goingUp) {
 
-        int[] nextIndex = findNextVerticalIndex(board, currentIndex, goingUp);
+        int[] nextIndex = findNextVerticalIndex(currentIndex, goingUp);
         boolean indexCheck = nextIndex[0] >= 0 && nextIndex[0] < board.length &&
                 nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
 
         if (indexCheck) {
             if (board[nextIndex[0]][nextIndex[1]].isPieceNull()) {
                 board[nextIndex[0]][nextIndex[1]].disallowKingMovement(playerColor);
-                disallowVerticalKingMovement(board, currentIndex, goingUp);
+                disallowVerticalKingMovement(board, nextIndex, goingUp);
 
             }
         }
     }
 
     private void addHorizontalThreats(Square[][] board, int[] currentIndex, boolean goingRight, int pmsType) {
-        int[] nextIndex = findNextHorizontalIndex(board, currentIndex, goingRight);
+        int[] nextIndex = findNextHorizontalIndex(currentIndex, goingRight);
         boolean indexCheck = nextIndex[0] >= 0 && nextIndex[0] < board.length &&
                 nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
 
@@ -115,7 +115,7 @@ public class Rook extends Piece {
                 possibleMovementSquares.add(board[nextIndex[0]][nextIndex[1]]);
                 board[nextIndex[0]][nextIndex[1]].addPieceThatCanMove(this);
                 pms.get(pmsType).add(board[nextIndex[0]][nextIndex[1]]);
-                addHorizontalThreats(board, nextIndex,  goingRight, pmsType);
+                addHorizontalThreats(board, nextIndex, goingRight, pmsType);
 
             } else if (board[nextIndex[0]][nextIndex[1]].getPiece().getPlayerColor() != playerColor) {
 
@@ -123,8 +123,8 @@ public class Rook extends Piece {
                 board[nextIndex[0]][nextIndex[1]].addPieceThatCanMove(this);
                 pms.get(pmsType).add(board[nextIndex[0]][nextIndex[1]]);
                 if (board[nextIndex[0]][nextIndex[1]].getPiece().getType() != Type.KING) {
-                    board[nextIndex[0]][nextIndex[1]].getPiece().setPinned(checkHorizontalPin(board, currentIndex, goingRight));
-                }else{
+                    board[nextIndex[0]][nextIndex[1]].getPiece().setPinned(checkHorizontalPin(board, nextIndex, goingRight));
+                } else {
                     disallowHorizontalKingMovement(board, currentIndex, goingRight);
                 }
 
@@ -135,7 +135,7 @@ public class Rook extends Piece {
     }
 
     private boolean checkHorizontalPin(Square[][] board, int[] currentIndex, boolean goingRight) {
-        int[] nextIndex = findNextHorizontalIndex(board, currentIndex, goingRight);
+        int[] nextIndex = findNextHorizontalIndex(currentIndex, goingRight);
         boolean indexCheck = nextIndex[0] >= 0 && nextIndex[0] < board.length &&
                 nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
 
@@ -153,28 +153,28 @@ public class Rook extends Piece {
         return false;
     }
 
-    private void disallowHorizontalKingMovement(Square[][] board, int[] currentIndex, boolean goingRight){
+    private void disallowHorizontalKingMovement(Square[][] board, int[] currentIndex, boolean goingRight) {
 
-        int[] nextIndex = findNextHorizontalIndex(board, currentIndex, goingRight);
+        int[] nextIndex = findNextHorizontalIndex(currentIndex, goingRight);
         boolean indexCheck = nextIndex[0] >= 0 && nextIndex[0] < board.length &&
                 nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
 
         if (indexCheck) {
             if (board[nextIndex[0]][nextIndex[1]].isPieceNull()) {
                 board[nextIndex[0]][nextIndex[1]].disallowKingMovement(playerColor);
-                disallowHorizontalKingMovement(board, currentIndex, goingRight);
+                disallowHorizontalKingMovement(board, nextIndex, goingRight);
 
             }
         }
     }
-    private static int[] findNextHorizontalIndex(Square[][] board, int[] currentIndex, boolean goingRight){
+    private static int[] findNextHorizontalIndex(int[] currentIndex, boolean goingRight){
         if (goingRight) {
             return new int[]{currentIndex[0], currentIndex[1] + 1};
         } else {
             return new int[]{currentIndex[0], currentIndex[1] - 1};
         }
     }
-    private static int[] findNextVerticalIndex(Square[][] board, int[] currentIndex, boolean goingUp){
+    private static int[] findNextVerticalIndex(int[] currentIndex, boolean goingUp){
         if (goingUp) {
             return new int[]{currentIndex[0] - 1, currentIndex[1]};
         } else {

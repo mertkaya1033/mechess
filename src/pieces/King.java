@@ -32,8 +32,7 @@ public class King extends Piece {
                                             board[index[0] + i][index[1] + j].getPiece().getPlayerColor() != playerColor
                                     )
                             )
-                    )
-                    {
+                    ) {
                         possibleMovementSquares.add(board[index[0] + i][index[1] + j]);
                         board[index[0] + i][index[1] + j].addPieceThatCanMove(this);
                     } else{
@@ -42,6 +41,7 @@ public class King extends Piece {
                 }
             }
         }
+        checkMovements();
     }
 
     public void checkMovements() {
@@ -49,6 +49,7 @@ public class King extends Piece {
             Square square = possibleMovementSquares.get(i);
             if (!square.canKingMove(playerColor)) {
                 possibleMovementSquares.remove(square);
+                square.getPiecesThatCanMove(playerColor).remove(this);
             }
         }
     }

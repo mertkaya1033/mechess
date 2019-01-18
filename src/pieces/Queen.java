@@ -62,9 +62,9 @@ public class Queen extends Piece {
                 board[nextIndex[0]][nextIndex[1]].addPieceThatCanMove(this);
                 pms.get(pmsType).add(board[nextIndex[0]][nextIndex[1]]);
                 if (board[nextIndex[0]][nextIndex[1]].getPiece().getType() != Type.KING) {
-                    board[nextIndex[0]][nextIndex[1]].getPiece().setPinned(checkVerticalPin(board, currentIndex, goingUp));
+                    board[nextIndex[0]][nextIndex[1]].getPiece().setPinned(checkVerticalPin(board, nextIndex, goingUp));
                 } else {
-                    disallowVerticalKingMovement(board, currentIndex, goingUp);
+                    disallowVerticalKingMovement(board, nextIndex, goingUp);
                 }
 
             } else {
@@ -101,7 +101,7 @@ public class Queen extends Piece {
         if (indexCheck) {
             if (board[nextIndex[0]][nextIndex[1]].isPieceNull()) {
                 board[nextIndex[0]][nextIndex[1]].disallowKingMovement(playerColor);
-                disallowVerticalKingMovement(board, currentIndex, goingUp);
+                disallowVerticalKingMovement(board, nextIndex, goingUp);
 
             }
         }
@@ -127,9 +127,9 @@ public class Queen extends Piece {
                 board[nextIndex[0]][nextIndex[1]].addPieceThatCanMove(this);
                 pms.get(pmsType).add(board[nextIndex[0]][nextIndex[1]]);
                 if (board[nextIndex[0]][nextIndex[1]].getPiece().getType() != Type.KING) {
-                    board[nextIndex[0]][nextIndex[1]].getPiece().setPinned(checkHorizontalPin(board, currentIndex, goingRight));
+                    board[nextIndex[0]][nextIndex[1]].getPiece().setPinned(checkHorizontalPin(board, nextIndex, goingRight));
                 } else {
-                    disallowHorizontalKingMovement(board, currentIndex, goingRight);
+                    disallowHorizontalKingMovement(board, nextIndex, goingRight);
                 }
 
             } else {
@@ -166,7 +166,7 @@ public class Queen extends Piece {
         if (indexCheck) {
             if (board[nextIndex[0]][nextIndex[1]].isPieceNull()) {
                 board[nextIndex[0]][nextIndex[1]].disallowKingMovement(playerColor);
-                disallowHorizontalKingMovement(board, currentIndex, goingRight);
+                disallowHorizontalKingMovement(board, nextIndex, goingRight);
 
             }
         }
@@ -192,9 +192,9 @@ public class Queen extends Piece {
                 board[nextIndex[0]][nextIndex[1]].addPieceThatCanMove(this);
                 pms.get(pmsType).add(board[nextIndex[0]][nextIndex[1]]);
                 if (board[nextIndex[0]][nextIndex[1]].getPiece().getType() != Type.KING) {
-                    board[nextIndex[0]][nextIndex[1]].getPiece().setPinned(checkDiagonalPin(board, currentIndex, goingUp, goingRight));
+                    board[nextIndex[0]][nextIndex[1]].getPiece().setPinned(checkDiagonalPin(board, nextIndex, goingUp, goingRight));
                 } else {
-                    disallowDiagonalKingMovement(board, currentIndex, goingUp, goingRight);
+                    disallowDiagonalKingMovement(board, nextIndex, goingUp, goingRight);
                 }
 
             } else {
@@ -229,9 +229,9 @@ public class Queen extends Piece {
                 nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
 
         if (indexCheck) {
-            if (board[nextIndex[0]][nextIndex[1]].isPieceNull()) {
+            if (board[nextIndex[0]][nextIndex[1]].isPieceNull() || (board[nextIndex[0]][nextIndex[1]].getPiece().getPlayerColor() != playerColor && board[nextIndex[0]][nextIndex[1]].getPiece().getType() == Type.KING)) {
                 board[nextIndex[0]][nextIndex[1]].disallowKingMovement(playerColor);
-                disallowDiagonalKingMovement(board, currentIndex, goingUp, goingRight);
+                disallowDiagonalKingMovement(board, nextIndex, goingUp, goingRight);
 
             }
         }

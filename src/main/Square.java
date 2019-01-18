@@ -189,7 +189,7 @@ public class Square {
     public void disallowKingMovement(Piece.Side playerColor){
         if(playerColor == Piece.Side.white){
             canBlackKingMove = false;
-        }else{
+        }else if(playerColor == Piece.Side.black){
             canWhiteKingMove = false;
         }
     }
@@ -202,9 +202,6 @@ public class Square {
         }
     }
 
-    public void reset(){
-        reset(true);
-    }
     public void reset(boolean fully){
         if(fully){
             canBlackKingMove = true;

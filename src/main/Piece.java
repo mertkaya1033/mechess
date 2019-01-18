@@ -34,7 +34,7 @@ public abstract class Piece {
      * @param player the player which owns the piece
      * @param type the type of the piece
      */
-    public Piece(String position, Player player, Type type) {
+    public Piece(String position, Player player, Type type) { //Each piece has its own parameters
         this.type = type;
         this.player = player;
         this.position = position;
@@ -42,7 +42,7 @@ public abstract class Piece {
         String imageName = "src/images/" + player.getColor().toString() + "_" + type.toString() + ".png";
         this.image = new ImageIcon(imageName).getImage();
         this.image = this.image.getScaledInstance(Constants.SQUARE_SIZE, Constants.SQUARE_SIZE, 0);
-        this.possibleMovementSquares = new ArrayList<>();
+        this.possibleMovementSquares = new ArrayList<>(); //checks which  spaces you can move to
     }
 
     /**
@@ -92,7 +92,8 @@ public abstract class Piece {
 
     public void setPinned(boolean pinned) {
         isPinned = pinned;
-        possibleMovementSquares = new ArrayList<>();
+        if(pinned)
+            possibleMovementSquares = new ArrayList<>();
     }
 
     public void protect(){

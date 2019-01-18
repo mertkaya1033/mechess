@@ -6,7 +6,8 @@ import javax.swing.JPanel;
 /**
  * Main.java
  * <p>
- * Description: This is the class which contains the main method of the whole program.
+ * Description: This is the class which contains the main method of the whole program. The program is basically the
+ * traditional chess game, however, without pawn promotion and en passant.
  *
  * @author mert
  * @version 1.0.0 (updated: Jan 17, 2019)

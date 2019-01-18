@@ -10,6 +10,7 @@ import java.util.ArrayList;
  * Description: The class that represents the each square on the board of the game
  *
  * @author mert
+ * @version 1.0.0 (updated: Jan 17, 2019)
  */
 public class Square {
     private String position;//address of the square

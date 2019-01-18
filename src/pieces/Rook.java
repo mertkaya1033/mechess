@@ -7,26 +7,51 @@ import main.Square;
 
 import java.util.ArrayList;
 
+/**
+ * Rook.java
+ * <p>
+ * Description: The class that represents the type of piece called Rook, which can move horizontally and vertically
+ * on the board.
+ *
+ * @author mert
+ * @version 1.0.0 (updated: Jan 17, 2019)
+ */
 public class Rook extends Piece {
-
+    /**
+     * Rook(String position, Player player)
+     * <p>
+     * Description: constructor
+     *
+     * @param position the address of the piece
+     * @param player   the player that posses this piece
+     */
     public Rook(String position, Player player) {
         super(position, player, Type.ROOK);
     }
 
+    /**
+     * occupy(Board board)
+     * <p>
+     * Description: This abstract method allows this piece to find/occupy each square it
+     * can legally move on the board.
+     *
+     * @param board the board
+     */
     @Override
     public void occupy(Board board) {
-        possibleMovementSquares = new ArrayList<>();
-        pathAsAThreat = new ArrayList<>();
-        pms = new ArrayList<>();
+        possibleMovementSquares = new ArrayList<>();//reset
+        pathAsAThreat = new ArrayList<>();//reset
+        pms = new ArrayList<>();//reset
         for (int i = 0; i < 4; i++) {
             pms.add(new ArrayList<>());
         }
 
-        addHorizontalThreats(board.getBoard(), currentSquare.getIndex(), true, 0);
-        addHorizontalThreats(board.getBoard(), currentSquare.getIndex(), false, 1);
-        addVerticalThreats(board.getBoard(), currentSquare.getIndex(), true, 2);
-        addVerticalThreats(board.getBoard(), currentSquare.getIndex(), false, 3);
+        addHorizontalThreats(board.getBoard(), currentSquare.getIndex(), true, 0);//right
+        addHorizontalThreats(board.getBoard(), currentSquare.getIndex(), false, 1);//left
+        addVerticalThreats(board.getBoard(), currentSquare.getIndex(), true, 2);//up
+        addVerticalThreats(board.getBoard(), currentSquare.getIndex(), false, 3);//down
 
+        //to check if it threatens the opponent's king
         for (ArrayList<Square> c : pms) {
             if (!c.isEmpty() && !c.get(c.size() - 1).isPieceNull() && c.get(c.size() - 1).getPiece().getType() == Type.KING) {
                 pathAsAThreat.addAll(c);
@@ -38,39 +63,65 @@ public class Rook extends Piece {
         }
     }
 
+    /**
+     * addVerticalThreats(Square[][] board, int[] currentIndex, boolean goingUp, int pmsType)
+     * <p>
+     * Description: adds the threats that are vertical to this piece
+     *
+     * @param board        the board
+     * @param currentIndex the index of the square that it currently is checking
+     * @param goingUp      the direction of the check
+     * @param pmsType      which pms is the path going to be saved
+     */
     private void addVerticalThreats(Square[][] board, int[] currentIndex, boolean goingUp, int pmsType) {
-        int[] nextIndex = findNextVerticalIndex(currentIndex, goingUp);
+        int[] nextIndex = findNextVerticalIndex(currentIndex, goingUp);//find the next square's index
+
         boolean indexCheck = nextIndex[0] >= 0 && nextIndex[0] < board.length &&
-                nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
+                nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;//check if it is within the board
 
         if (indexCheck) {
 
-            if (board[nextIndex[0]][nextIndex[1]].isPieceNull()) {
 
+            if (board[nextIndex[0]][nextIndex[1]].isPieceNull()) {
+                //add the square to the possible movement squares and then move on with the next square
                 possibleMovementSquares.add(board[nextIndex[0]][nextIndex[1]]);
                 board[nextIndex[0]][nextIndex[1]].addPieceThatCanMove(this);
                 pms.get(pmsType).add(board[nextIndex[0]][nextIndex[1]]);
                 addVerticalThreats(board, nextIndex, goingUp, pmsType);
 
             } else if (board[nextIndex[0]][nextIndex[1]].getPiece().getPlayerColor() != playerColor) {
-
+                //threaten the piece
                 possibleMovementSquares.add(board[nextIndex[0]][nextIndex[1]]);
                 board[nextIndex[0]][nextIndex[1]].addPieceThatCanMove(this);
                 pms.get(pmsType).add(board[nextIndex[0]][nextIndex[1]]);
+                //check if there are any pins if the piece is not king
                 if (board[nextIndex[0]][nextIndex[1]].getPiece().getType() != Type.KING) {
                     board[nextIndex[0]][nextIndex[1]].getPiece().setPinned(checkVerticalPin(board, nextIndex, goingUp));
                 } else {
-                    disallowVerticalKingMovement(board, currentIndex, goingUp);
+                    //don't allow the king to move to a place where this piece still capture it
+                    disallowVerticalKingMovement(board, nextIndex, goingUp);
                 }
 
             } else {
+                //protect the piece that is owned by the same player
                 board[nextIndex[0]][nextIndex[1]].getPiece().protect();
             }
         }
     }
 
+    /**
+     * checkVerticalPin(Square[][] board, int[] currentIndex, boolean goingUp)
+     * <p>
+     * Description: checks if this piece pins another piece
+     *
+     * @param board        the board
+     * @param currentIndex the index of the current square that it is currently checking
+     * @param goingUp      the direction of the pin
+     * @return if it does pin the piece or not
+     */
     private boolean checkVerticalPin(Square[][] board, int[] currentIndex, boolean goingUp) {
         int[] nextIndex = findNextVerticalIndex(currentIndex, goingUp);
+
         boolean indexCheck = nextIndex[0] >= 0 && nextIndex[0] < board.length &&
                 nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
 
@@ -80,6 +131,7 @@ public class Rook extends Piece {
                 return checkVerticalPin(board, nextIndex, goingUp);
 
             } else if (board[nextIndex[0]][nextIndex[1]].getPiece().getPlayerColor() != playerColor) {
+                //if the king is behind this piece, return true
                 if (board[nextIndex[0]][nextIndex[1]].getPiece().getType() == Type.KING) {
                     return true;
                 }
@@ -88,6 +140,15 @@ public class Rook extends Piece {
         return false;
     }
 
+    /**
+     * disallowVerticalKingMovement(Square[][] board, int[] currentIndex, boolean goingUp)
+     * <p>
+     * Description: doesn't allow the opponent's king to move to a place where this piece still capture it
+     *
+     * @param board        the board
+     * @param currentIndex the index of the current square that the method is currently on
+     * @param goingUp      the direction of the threats
+     */
     private void disallowVerticalKingMovement(Square[][] board, int[] currentIndex, boolean goingUp) {
 
         int[] nextIndex = findNextVerticalIndex(currentIndex, goingUp);
@@ -103,7 +164,18 @@ public class Rook extends Piece {
         }
     }
 
+    /**
+     * addHorizontalThreats(Square[][] board, int[] currentIndex, boolean goingRight, int pmsType)
+     * <p>
+     * Description: adds the threats that are horizontal to this piece
+     *
+     * @param board        the board
+     * @param currentIndex the index of the square that it currently is checking
+     * @param goingRight   the direction of the check
+     * @param pmsType      which pms is the path going to be saved
+     */
     private void addHorizontalThreats(Square[][] board, int[] currentIndex, boolean goingRight, int pmsType) {
+        //works with the same logic as with the vertical check
         int[] nextIndex = findNextHorizontalIndex(currentIndex, goingRight);
         boolean indexCheck = nextIndex[0] >= 0 && nextIndex[0] < board.length &&
                 nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
@@ -125,7 +197,7 @@ public class Rook extends Piece {
                 if (board[nextIndex[0]][nextIndex[1]].getPiece().getType() != Type.KING) {
                     board[nextIndex[0]][nextIndex[1]].getPiece().setPinned(checkHorizontalPin(board, nextIndex, goingRight));
                 } else {
-                    disallowHorizontalKingMovement(board, currentIndex, goingRight);
+                    disallowHorizontalKingMovement(board, nextIndex, goingRight);
                 }
 
             } else {
@@ -134,7 +206,18 @@ public class Rook extends Piece {
         }
     }
 
+    /**
+     * checkHorizontalPin(Square[][] board, int[] currentIndex, boolean goingRight)
+     * <p>
+     * Description: checks if this piece pins another piece
+     *
+     * @param board        the board
+     * @param currentIndex the index of the current square that it is currently checking
+     * @param goingRight   the direction of the pin
+     * @return if it does pin the piece or not
+     */
     private boolean checkHorizontalPin(Square[][] board, int[] currentIndex, boolean goingRight) {
+        //works with the same logic as with the vertical check
         int[] nextIndex = findNextHorizontalIndex(currentIndex, goingRight);
         boolean indexCheck = nextIndex[0] >= 0 && nextIndex[0] < board.length &&
                 nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
@@ -153,8 +236,17 @@ public class Rook extends Piece {
         return false;
     }
 
+    /**
+     * disallowHorizontalKingMovement(Square[][] board, int[] currentIndex, boolean goingRight)
+     * <p>
+     * Description: doesn't allow the opponent's king to move to a place where this piece still capture it
+     *
+     * @param board        the board
+     * @param currentIndex the index of the current square that the method is currently on
+     * @param goingRight   the direction of the threats
+     */
     private void disallowHorizontalKingMovement(Square[][] board, int[] currentIndex, boolean goingRight) {
-
+        //works with the same logic as with the vertical check
         int[] nextIndex = findNextHorizontalIndex(currentIndex, goingRight);
         boolean indexCheck = nextIndex[0] >= 0 && nextIndex[0] < board.length &&
                 nextIndex[1] >= 0 && nextIndex[1] < board[nextIndex[0]].length;
@@ -167,14 +259,34 @@ public class Rook extends Piece {
             }
         }
     }
-    private static int[] findNextHorizontalIndex(int[] currentIndex, boolean goingRight){
+
+    /**
+     * findNextHorizontalIndex(int[] currentIndex, boolean goingRight)
+     * <p>
+     * Description: finds the index of the next square of a horizontal check, given its direction
+     *
+     * @param currentIndex the current index
+     * @param goingRight   the direction of the check
+     * @return the next index
+     */
+    private static int[] findNextHorizontalIndex(int[] currentIndex, boolean goingRight) {
         if (goingRight) {
             return new int[]{currentIndex[0], currentIndex[1] + 1};
         } else {
             return new int[]{currentIndex[0], currentIndex[1] - 1};
         }
     }
-    private static int[] findNextVerticalIndex(int[] currentIndex, boolean goingUp){
+
+    /**
+     * findNextVerticalIndex(int[] currentIndex, boolean goingUp)
+     * <p>
+     * Description: finds the index of the next square of a vertical check, given its direction
+     *
+     * @param currentIndex the current index
+     * @param goingUp      the direction of the check
+     * @return the next index
+     */
+    private static int[] findNextVerticalIndex(int[] currentIndex, boolean goingUp) {
         if (goingUp) {
             return new int[]{currentIndex[0] - 1, currentIndex[1]};
         } else {

@@ -6,6 +6,14 @@ import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import javax.swing.JPanel;
 
+/**
+ * Button.java
+ * <p>
+ * Description: Used to create buttons on the screen
+ *
+ * @author mert
+ * @version 1.0.0 (updated: Jan 17, 2019)
+ */
 public class Button {
 
     private int xPos, yPos,    //positions of the rectangle referenced from top left corner
@@ -20,12 +28,16 @@ public class Button {
     private JPanel panel;
 
     /**
+     * Button(JPanel panel, String txt, int x, int y, int fontSize, Display.Scene job)
+     * <p>
+     * Description: constructor
+     *
      * @param panel    the panel where the buttons is going to be displayed
      * @param txt      the text that is displayed on the button
      * @param x        the x position of the button referenced from the middle
      * @param y        the y position of the button referenced from the middle
      * @param fontSize the font size of the text
-     * @param job      the string that it is suppose to return(something other than "")
+     * @param job      the scene it is suppose to switch to.
      */
     public Button(JPanel panel, String txt, int x, int y, int fontSize, Display.Scene job) {
         this.colour = new Color(245, 147, 66);
@@ -51,7 +63,9 @@ public class Button {
     }
 
     /**
-     * draws the button to the frame
+     * display(Graphics g)
+     * <p>
+     * Description: draws the button to the frame
      *
      * @param g the graphics panel of the program
      */
@@ -71,7 +85,9 @@ public class Button {
     }
 
     /**
-     * checks if the mouse is on
+     * mouseOver(MouseEvent e)
+     * <p>
+     * Description: checks if the mouse is on
      */
     public void mouseOver(MouseEvent e) {
         boolean isMouseXIn = e.getX() > this.x - (this.width / 2 + this.roundSize / 2) && e.getX() < this.x + (this.width / 2 + this.roundSize / 2);
@@ -84,7 +100,9 @@ public class Button {
     }
 
     /**
-     * does its job if the mouse is clicked on the button
+     * clicked(MouseEvent e)
+     * <p>
+     * Description: does its job if the mouse is clicked on the button
      *
      * @return if mouse is in, its job, if not, empty string
      */
@@ -96,24 +114,4 @@ public class Button {
         }
         return null;
     }
-
-    /******* setters and getters *********/
-    public void setxPos(int x) {
-        this.x = x;
-        this.xPos = (x - this.roundSize / 2) - (width / 2);
-        this.txtXpos = x - this.width / 2;
-    }
-
-    public void setyPos(int y) {
-        this.y = y;
-        this.yPos = y - this.height / 2;
-        this.txtYpos = y + this.height / 2 - panel.getFontMetrics(font).getDescent();
-    }
-
-    public void setPos(int x, int y) {
-        setxPos(x);
-        setyPos(y);
-    }
-
-
 }

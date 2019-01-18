@@ -28,6 +28,11 @@ public abstract class Piece {
     protected Type type;//the type of the piece
     protected String position;//the address of the piece on the board
     protected ArrayList<ArrayList<Square>> pms;//used to determine different paths of the piece
+    protected boolean firstMove = true;//
+    protected String kingSideRook;
+    protected String queenSideRook;
+    protected Square kingSideCastlePosition = null, queenSideCastlePosition = null,
+            kingSideCastleKingPos = null, queenSideCastleKingPos = null;
 
     /**
      * @param position the address of the piece on the board
@@ -50,10 +55,6 @@ public abstract class Piece {
      */
     public abstract void occupy(Board board);
 
-    public void emptyOccupies(){
-        possibleMovementSquares = new ArrayList<>();
-    }
-
     /**
      * @param pos
      */
@@ -63,6 +64,7 @@ public abstract class Piece {
             currentSquare.setPiece(null);
             currentSquare = pos;
             pos.setPiece(this);
+            firstMove = false;
         }
     }
     /**
@@ -113,4 +115,15 @@ public abstract class Piece {
         pathAsAThreat = new ArrayList<>();
         isPinned = false;
     }
+
+    public boolean hasntMoved(){
+        return firstMove;
+    }
+    public ArrayList<Square>possibleCastleSquares(){
+        ArrayList<Square> ret = new ArrayList<>();
+        ret.add(queenSideCastleKingPos);
+        ret.add(kingSideCastleKingPos);
+        return ret;
+    }
+
 }

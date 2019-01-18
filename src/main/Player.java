@@ -142,5 +142,9 @@ public class Player {
     public boolean hasMove(){
         return doesHaveMove;
     }
+
+    public Board getBoard(){
+        return board;
+    }
 }
 

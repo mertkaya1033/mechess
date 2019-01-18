@@ -146,10 +146,24 @@ public class Square {
             for (int i = 0; i < th.size(); i++) {
                 th.get(i).setThePieceCanMove(piece);
             }
+            if(piece.type == Piece.Type.KING){
+                for(Square square:piece.possibleCastleSquares()){
+                    if(square != null){
+                        square.setThePieceCanMove(piece);
+                    }
+                }
+            }
         } else if (piece != null) {
             ArrayList<Square> th = piece.getPossibleMovementSquares();
             for (int i = 0; i < th.size(); i++) {
                 th.get(i).setThePieceCanMove(null);
+            }
+            if(piece.type == Piece.Type.KING){
+                for(Square square:piece.possibleCastleSquares()){
+                    if(square != null){
+                        square.setThePieceCanMove(null);
+                    }
+                }
             }
         }
     }

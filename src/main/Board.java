@@ -56,6 +56,8 @@ public class Board {
             }
         }
 
+
+
     }
 
     /**
@@ -221,5 +223,9 @@ public class Board {
         selectedSquare = null;
         result = "on going";
         whiteTurn = true;
+    }
+
+    public String getResult() {
+        return result;
     }
 }

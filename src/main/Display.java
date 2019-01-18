@@ -45,6 +45,13 @@ public class Display extends JPanel implements MouseListener,
         g.drawImage(background, 0, 0, null);
         if (scene == Scene.GAMEPLAY) {
             board.display(g);
+            if (board.getResult().equals("white wins")) {
+                drawTextMiddle(g, "WHITE WON", Constants.FRAME_WIDTH / 2, 250, 90, new Color(245, 147, 66));
+            } else if (board.getResult().equals("black wins")) {
+                drawTextMiddle(g, "BLACK WON", Constants.FRAME_WIDTH / 2, 250, 90, new Color(245, 147, 66));
+            } else if (board.getResult().equals("stalemate")) {
+                drawTextMiddle(g, "STALEMATE", Constants.FRAME_WIDTH / 2, 250, 90, new Color(245, 147, 66));
+            }
             mainMenuButton.display(g);
         } else if (scene == Scene.MAINMENU) {
             mainMenuDisplay(g);
@@ -64,11 +71,11 @@ public class Display extends JPanel implements MouseListener,
     }
 
     private void instructionsDisplay(Graphics g) {
-        drawTextMiddle(g, "INSTRUCTIONS", Constants.FRAME_WIDTH/2, 120, 60, new Color(255,255,255, 125));
-        drawTextMiddle(g, "1. click on the square to select it", Constants.FRAME_WIDTH/2, 300, 20, Color.white);
-        drawTextMiddle(g, "2. click on the square where you want to move your piece", Constants.FRAME_WIDTH/2, 350, 20, Color.white);
-        drawTextMiddle(g, "3. if you want to unselect the square, click on it again", Constants.FRAME_WIDTH/2, 400, 20, Color.white);
-        drawTextMiddle(g, "THAT'S IT! NOW YOU CAN PLAY!", Constants.FRAME_WIDTH/2, 450, 20, Color.white);
+        drawTextMiddle(g, "INSTRUCTIONS", Constants.FRAME_WIDTH / 2, 120, 60, new Color(255, 255, 255, 125));
+        drawTextMiddle(g, "1. click on the square to select it", Constants.FRAME_WIDTH / 2, 300, 20, Color.white);
+        drawTextMiddle(g, "2. click on the square where you want to move your piece", Constants.FRAME_WIDTH / 2, 350, 20, Color.white);
+        drawTextMiddle(g, "3. if you want to unselect the square, click on it again", Constants.FRAME_WIDTH / 2, 400, 20, Color.white);
+        drawTextMiddle(g, "THAT'S IT! NOW YOU CAN PLAY!", Constants.FRAME_WIDTH / 2, 450, 20, Color.white);
         mainMenuButton.display(g);
     }
 
@@ -110,17 +117,16 @@ public class Display extends JPanel implements MouseListener,
             board.clicked(e);
 
             job = mainMenuButton.clicked(e);
-            if (job != null){
+            if (job != null) {
                 scene = job;
                 board.reset();
             }
-        }
-        else if (scene == Scene.MAINMENU) {
+        } else if (scene == Scene.MAINMENU) {
             job = playButton.clicked(e);
             if (job != null) scene = job;
             job = instructionsButton.clicked(e);
             if (job != null) scene = job;
-        }else if(scene == Scene.INSTRUCTIONS){
+        } else if (scene == Scene.INSTRUCTIONS) {
             job = mainMenuButton.clicked(e);
             if (job != null) scene = job;
         }
@@ -135,11 +141,12 @@ public class Display extends JPanel implements MouseListener,
         if (scene == Scene.MAINMENU) {
             playButton.mouseOver(e);
             instructionsButton.mouseOver(e);
-        }else if(scene == Scene.INSTRUCTIONS){
+        } else if (scene == Scene.INSTRUCTIONS) {
             mainMenuButton.mouseOver(e);
-        }else if(scene == Scene.GAMEPLAY){
+        } else if (scene == Scene.GAMEPLAY) {
             mainMenuButton.mouseOver(e);
         }
+        repaint();
     }
 
     /**

@@ -4,6 +4,13 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
+/**
+ * Square.java
+ * <p>
+ * Description: The class that represents the each square on the board of the game
+ *
+ * @author mert
+ */
 public class Square {
     private String position;//address of the square
     private ArrayList<Piece> whitePiecesThatCanMove = new ArrayList<>();//the white pieces that can move to this square
@@ -74,61 +81,6 @@ public class Square {
         }
     }
 
-    /**
-     * setPiece(Piece piece)
-     * <p>
-     * Description: setter
-     *
-     * @param piece changes the piece on this square to this piece
-     */
-    public void setPiece(Piece piece) {
-        this.piece = piece;
-    }
-
-    /**
-     * getPiece(void)
-     * <p>
-     * Description: getter
-     *
-     * @return the current piece on the square
-     */
-    public Piece getPiece() {
-        return this.piece;
-    }
-
-    /**
-     * isPieceNull()
-     * <p>
-     * Description: Determines if there is a piece placed on this square
-     *
-     * @return if there is a piece on the square
-     */
-    public boolean isPieceNull() {
-        return this.piece == null;
-    }
-
-    /**
-     * getIndex()
-     * <p>
-     * Description: getter
-     *
-     * @return the index of the square on the board
-     */
-    public int[] getIndex() {
-        return this.index;
-    }
-
-    /**
-     * setThePieceCanMove(Piece thePieceCanMove)
-     * <p>
-     * Description: setter
-     *
-     * @param thePieceCanMove the piece that can move to this square
-     */
-    public void setThePieceCanMove(Piece thePieceCanMove) {
-        this.thePieceCanMove = thePieceCanMove;
-    }
-
 
     /**
      * clicked(boolean showThreatsForPiece)
@@ -141,26 +93,31 @@ public class Square {
         this.selected = !this.selected;
         this.showTheThreatsForThePiece = showThreatsForPiece;
 
+        //if the square has been selected and the threats of the piece is to he shown
         if (selected && piece != null && showTheThreatsForThePiece) {
             ArrayList<Square> th = piece.getPossibleMovementSquares();
             for (int i = 0; i < th.size(); i++) {
                 th.get(i).setThePieceCanMove(piece);
             }
-            if(piece.type == Piece.Type.KING){
-                for(Square square:piece.possibleCastleSquares()){
-                    if(square != null){
+            //for castling
+            if (piece.type == Piece.Type.KING) {
+                for (Square square : piece.possibleCastleSquares()) {
+                    if (square != null) {
                         square.setThePieceCanMove(piece);
                     }
                 }
             }
-        } else if (piece != null) {
+        }
+        //dont show the threats
+        else if (piece != null) {
             ArrayList<Square> th = piece.getPossibleMovementSquares();
             for (int i = 0; i < th.size(); i++) {
                 th.get(i).setThePieceCanMove(null);
             }
-            if(piece.type == Piece.Type.KING){
-                for(Square square:piece.possibleCastleSquares()){
-                    if(square != null){
+            //for castling
+            if (piece.type == Piece.Type.KING) {
+                for (Square square : piece.possibleCastleSquares()) {
+                    if (square != null) {
                         square.setThePieceCanMove(null);
                     }
                 }
@@ -169,55 +126,47 @@ public class Square {
     }
 
     /**
-     * getPosition()
+     * addPieceThatCanMove(Piece piece)
+     * <p>
+     * Description: adds a piece that can move to this square
      *
-     * Description: getter
-     *
-     * @return the address of the square on the board
+     * @param piece the piece that can move to this square
      */
-    public String getPosition(){
-        return this.position;
-    }
-
-    /**
-     * getPosition()
-     *
-     * Description: getter
-     *
-     * @return the piece that can move to this square
-     */
-    public Piece getThePieceCanMove() {
-        return thePieceCanMove;
-    }
-
-    public void addPieceThatCanMove(Piece piece){
-        if(piece.playerColor == Piece.Side.white){
+    public void addPieceThatCanMove(Piece piece) {
+        if (piece.playerColor == Piece.Side.white) {
             whitePiecesThatCanMove.add(piece);
             canBlackKingMove = false;
-        }else{
+        } else {
             blackPiecesThatCanMove.add(piece);
             canWhiteKingMove = false;
         }
     }
 
-    public void disallowKingMovement(Piece.Side playerColor){
-        if(playerColor == Piece.Side.white){
+    /**
+     * disallowKingMovement(Piece.Side playerColor)
+     * <p>
+     * Description: to not allow a king to move to this square
+     *
+     * @param playerColor the color of the player which does not allow other king to move to
+     *                    this square
+     */
+    public void disallowKingMovement(Piece.Side playerColor) {
+        if (playerColor == Piece.Side.white) {
             canBlackKingMove = false;
-        }else if(playerColor == Piece.Side.black){
+        } else if (playerColor == Piece.Side.black) {
             canWhiteKingMove = false;
         }
     }
 
-    public boolean canKingMove(Piece.Side playerColor) {
-        if(playerColor == Piece.Side.white){
-            return canWhiteKingMove;
-        }else {
-            return canBlackKingMove;
-        }
-    }
-
-    public void reset(boolean fully){
-        if(fully){
+    /**
+     * reset(boolean fully)
+     * <p>
+     * Description: to reset the square
+     *
+     * @param fully to determine if it is needed to not reset the can kings move or not
+     */
+    public void reset(boolean fully) {
+        if (fully) {
             canBlackKingMove = true;
             canWhiteKingMove = true;
         }
@@ -225,17 +174,52 @@ public class Square {
         blackPiecesThatCanMove = new ArrayList<>();
     }
 
-    public boolean isCanKingMove(Piece.Side playerColor){
-        if(playerColor == Piece.Side.white){
+    /*** GETTERS AND SETTERS ***/
+    public boolean canKingMove(Piece.Side playerColor) {
+        if (playerColor == Piece.Side.white) {
             return canWhiteKingMove;
+        } else {
+            return canBlackKingMove;
         }
-        return canBlackKingMove;
     }
 
-    public ArrayList<Piece>getPiecesThatCanMove(Piece.Side playerColor){
-        if(playerColor == Piece.Side.white){
+    public ArrayList<Piece> getPiecesThatCanMove(Piece.Side playerColor) {
+        if (playerColor == Piece.Side.white) {
             return whitePiecesThatCanMove;
         }
         return blackPiecesThatCanMove;
+    }
+
+
+    public String getPosition() {
+        return this.position;
+    }
+
+    public Piece getThePieceCanMove() {
+        return thePieceCanMove;
+    }
+
+    public void setPiece(Piece piece) {
+        this.piece = piece;
+    }
+
+
+    public Piece getPiece() {
+        return this.piece;
+    }
+
+
+    public boolean isPieceNull() {
+        return this.piece == null;
+    }
+
+
+    public int[] getIndex() {
+        return this.index;
+    }
+
+
+    public void setThePieceCanMove(Piece thePieceCanMove) {
+        this.thePieceCanMove = thePieceCanMove;
     }
 }
